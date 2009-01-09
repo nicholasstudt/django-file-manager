@@ -1,0 +1,4 @@
+To install run this command from the command prompt: 
+
+	python setup.py install
+	 
