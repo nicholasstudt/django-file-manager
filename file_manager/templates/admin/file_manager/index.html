@@ -1,2 +1,34 @@
 
 <h1>Directory: '{{ directory }}'</h1>
+
+<table>
+{% for file in directories|dictsort:"filename" %}
+	<tr>
+		<td>
+			{% if file.directory %}D{% endif %}	
+		</td>
+		<td>{{ file.filename }}</td>
+		<td>{{ file.size|filesizeformat }}</td>
+		<td>{{ file.mtime|date:"m/d/Y" }}</td>
+		<td>{{ file.ctime|date:"m/d/Y" }}</td>
+		<td>{{ file.perms }}</td>
+		<td>{{ file.user }}</td>
+		<td>{{ file.group }}</td>
+	</tr>
+{% endfor %}
+
+{% for file in files|dictsort:"filename" %}
+	<tr>
+		<td>
+			{% if file.directory %}D{% endif %}	
+		</td>
+		<td>{{ file.filename }}</td>
+		<td>{{ file.size|filesizeformat }}</td>
+		<td>{{ file.mtime|date:"m/d/Y" }}</td>
+		<td>{{ file.ctime|date:"m/d/Y" }}</td>
+		<td>{{ file.perms }}</td>
+		<td>{{ file.user }}</td>
+		<td>{{ file.group }}</td>
+	</tr>
+{% endfor %}
+</table>

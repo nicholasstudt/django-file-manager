@@ -1,0 +1,4 @@
+include Changes
+include INSTALL
+include MANIFEST.in
+include setup.py

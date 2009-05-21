@@ -1,6 +1,10 @@
 import os
 import urllib
 
+from datetime import datetime
+from grp import getgrgid
+from pwd import getpwuid
+
 from django import http, template
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
@@ -59,6 +63,7 @@ def file_index(request, url=None):
 
     # Stuff the files in here.
     files = []
+    directories = []
 
     full_path = os.path.join(_get_document_root(), clean_url)
 
@@ -68,38 +73,40 @@ def file_index(request, url=None):
         itemstat = os.stat(os.path.join(full_path, file))
 
         item = {}
-        # name
         item['filename'] = file
+        item['user'] = getpwuid(itemstat.st_uid)[0]
+        item['group'] = getgrgid(itemstat.st_gid)[0]
 
         # size (in bytes ) for use with |filesizeformat
         item['size'] = itemstat.st_size
         
         # type (direcory/file)
-        item['directory'] = os.path.isdir(file)
+        item['directory'] = os.path.isdir(os.path.join(full_path, file))
 
-        # ctime
-        item['ctime'] = itemstat.st_ctime
-        # mtime
-        item['mtime'] = itemstat.st_mtime
+        # ctime, mtime
+        item['ctime'] = datetime.fromtimestamp(itemstat.st_ctime)
+        item['mtime'] = datetime.fromtimestamp(itemstat.st_mtime)
 
         # permissions (numeric)
         octs = "%04d" % int(oct(itemstat.st_mode & 0777))
+        
         dperms = '-'
         if item['directory']:
             dperms = 'd'
 
         item['perms_numeric'] = octs
-        item['perms'] = "%s%s%s%s" % ( dperms, perms[int(octs[1])], perms[int(octs[2])], perms[int(octs[3])] )
-        
-        files.append(item)
+        item['perms'] = "%s%s%s%s" % (dperms, perms[int(octs[1])], 
+                                      perms[int(octs[2])], perms[int(octs[3])])
+       
+        if item['directory']:
+            directories.append(item)
+        else:
+            files.append(item)
     
-    # Sort the files array based on something...
-
     return render_to_response("admin/file_manager/index.html", 
-                              {
-                                'directory': clean_url,
-                                'listing': files,
-                               },
+                              {'directory': clean_url,
+                               'files': files,
+                               'directories': directories,},
                               context_instance=template.RequestContext(request))
 file_index = staff_member_required(file_index)
 
