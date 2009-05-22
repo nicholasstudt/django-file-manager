@@ -12,6 +12,6 @@ urlpatterns = patterns('',
 
     # Need to have a "root" for viewing, so we don't get clash with
     # actions above. 
-    url(r'^/v(?P<url>.*)$', 'file_manager.views.file_index', name='index'),
-    url(r'^/$', 'file_manager.views.file_index', name='fileindex'),
+    url(r'^/v(?P<url>.*)$', 'file_manager.views.index', name='index'),
+    url(r'^/$', 'file_manager.views.index', name='fileindex'),
 )

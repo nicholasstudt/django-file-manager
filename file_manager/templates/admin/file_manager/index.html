@@ -1,34 +1,52 @@
 
 <h1>Directory: '{{ directory }}'</h1>
 
+<a href="{% url mkdir directory %}">Mkdir</a>
+<a href="{% url create directory %}">Create File</a>
+<a href="{% url upload directory %}">Upload</a>
+
 <table>
-{% for file in directories|dictsort:"filename" %}
+	<tr>
+		<td>Name</td>
+		<td>Size</td>
+		<td>Permissions</td>
+		<td>Created</td>
+		<td>Modified</td>
+		<td>User</td>
+		<td>Group</td>
+		<td>Actions</td>
+	</tr>
+
+{% regroup files|dictsortreversed:"directory" by directory as file_list %}
+
+{% for dfile in file_list %}
+
+{% for file in dfile.list|dictsort:"filename" %}
 	<tr>
 		<td>
 			{% if file.directory %}D{% endif %}	
+			<a href="">{{ file.filename }}</a>
 		</td>
-		<td>{{ file.filename }}</td>
-		<td>{{ file.size|filesizeformat }}</td>
-		<td>{{ file.mtime|date:"m/d/Y" }}</td>
-		<td>{{ file.ctime|date:"m/d/Y" }}</td>
+		<td>
+			{% if not file.directory %}
+				{{ file.size|filesizeformat }}
+			{% endif %}	
+		</td>
 		<td>{{ file.perms }}</td>
+		<td>{{ file.ctime|date:"m/d/Y" }}</td>
+		<td>{{ file.mtime|date:"m/d/Y" }}</td>
 		<td>{{ file.user }}</td>
 		<td>{{ file.group }}</td>
+		<td><a href="">View</a> /
+			{% if file.directory %}
+				<a href="{% url rename file.filename %}">Edit</a> /
+			{% else %}
+				<a href="{% url update file.filename %}">Edit</a> /
+			{% endif %}
+			<a href="{% url copy file.filename %}">Copy</a></td>
 	</tr>
 {% endfor %}
 
-{% for file in files|dictsort:"filename" %}
-	<tr>
-		<td>
-			{% if file.directory %}D{% endif %}	
-		</td>
-		<td>{{ file.filename }}</td>
-		<td>{{ file.size|filesizeformat }}</td>
-		<td>{{ file.mtime|date:"m/d/Y" }}</td>
-		<td>{{ file.ctime|date:"m/d/Y" }}</td>
-		<td>{{ file.perms }}</td>
-		<td>{{ file.user }}</td>
-		<td>{{ file.group }}</td>
-	</tr>
 {% endfor %}
+
 </table>

@@ -52,7 +52,7 @@ def create(request, url=None):
 def copy(request, url=None):
     pass
 
-def file_index(request, url=None):
+def index(request, url=None):
     """
     Show list of files in a directory
     """
@@ -63,7 +63,6 @@ def file_index(request, url=None):
 
     # Stuff the files in here.
     files = []
-    directories = []
 
     full_path = os.path.join(_get_document_root(), clean_url)
 
@@ -97,18 +96,24 @@ def file_index(request, url=None):
         item['perms_numeric'] = octs
         item['perms'] = "%s%s%s%s" % (dperms, perms[int(octs[1])], 
                                       perms[int(octs[2])], perms[int(octs[3])])
-       
-        if item['directory']:
-            directories.append(item)
+     
+        if os.access(os.path.join(full_path, file), os.R_OK):
+            item['can_read'] = True
         else:
-            files.append(item)
+            item['can_read'] = False
+
+        if os.access(os.path.join(full_path, file), os.W_OK):
+            item['can_write'] = True
+        else:
+            item['can_write'] = False
+
+        files.append(item)
     
     return render_to_response("admin/file_manager/index.html", 
                               {'directory': clean_url,
-                               'files': files,
-                               'directories': directories,},
+                               'files': files,},
                               context_instance=template.RequestContext(request))
-file_index = staff_member_required(file_index)
+index = staff_member_required(index)
 
 @staff_member_required
 def mkdir(request, url=None):
