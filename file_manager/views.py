@@ -56,10 +56,12 @@ def index(request, url=None):
     """
     Show list of files in a directory
     """
-  
+ 
     perms = [ '---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx' ]
 
     clean_url = _clean_path(url)
+    
+    parent = '/'.join(clean_url.split('/')[:-1])
 
     # Stuff the files in here.
     files = []
@@ -73,6 +75,7 @@ def index(request, url=None):
 
         item = {}
         item['filename'] = file
+        item['fileurl'] = os.path.join(clean_url, file)
         item['user'] = getpwuid(itemstat.st_uid)[0]
         item['group'] = getgrgid(itemstat.st_gid)[0]
 
@@ -111,6 +114,7 @@ def index(request, url=None):
     
     return render_to_response("admin/file_manager/index.html", 
                               {'directory': clean_url,
+                               'parent': parent,
                                'files': files,},
                               context_instance=template.RequestContext(request))
 index = staff_member_required(index)
@@ -125,7 +129,19 @@ def delete(request, url=None):
 
 @staff_member_required
 def rename(request, url=None):
-    pass
+    
+    clean_url = _clean_path(url)
+
+    parent = '/'.join(clean_url.split('/')[:-1])
+    
+    full_path = os.path.join(_get_document_root(), clean_url)
+
+    return render_to_response("admin/file_manager/rename.html", 
+                              {
+                               'url': url,},
+                              context_instance=template.RequestContext(request))
+
+
 
 @staff_member_required
 def update(request, url=None):

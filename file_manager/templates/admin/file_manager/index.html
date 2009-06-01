@@ -1,5 +1,9 @@
 
-<h1>Directory: '{{ directory }}'</h1>
+<h1>Directory: '/{{ directory }}'</h1>
+
+{% if directory %}
+    <a href="{% url list parent %}">Up one</a>
+{% endif %}
 
 <a href="{% url mkdir directory %}">Mkdir</a>
 <a href="{% url create directory %}">Create File</a>
@@ -25,7 +29,7 @@
 	<tr>
 		<td>
 			{% if file.directory %}D{% endif %}	
-			<a href="">{{ file.filename }}</a>
+			<a href="{% if file.directory %}{% url list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
 		</td>
 		<td>
 			{% if not file.directory %}
