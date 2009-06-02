@@ -2,3 +2,4 @@ include Changes
 include INSTALL
 include MANIFEST.in
 include setup.py
+recursive-include file_manager/templates *
