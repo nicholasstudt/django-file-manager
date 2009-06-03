@@ -11,6 +11,8 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
 
+from file_manager import forms
+
 def _get_document_root():
     if not settings.DOCUMENT_ROOT:
         raise ImproperlyConfigured, 'file_manager requires DOCUMENT_ROOT variable be defined in settings.py' 
@@ -129,19 +131,29 @@ def delete(request, url=None):
 
 @staff_member_required
 def rename(request, url=None):
-    
+
     clean_url = _clean_path(url)
 
     parent = '/'.join(clean_url.split('/')[:-1])
     
     full_path = os.path.join(_get_document_root(), clean_url)
 
+    if request.method == 'POST': 
+        form = forms.DirectoryForm(request.POST) 
+
+        if form.is_valid(): 
+            #form.save()
+            
+            return redirect('student-index', plan=plan)
+    else:
+        form = forms.DirectoryForm() # An unbound form 
+        #form.parent.path = full_path
+        #form.parent.recursive = True
+
     return render_to_response("admin/file_manager/rename.html", 
-                              {
+                              {'form': form,
                                'url': url,},
                               context_instance=template.RequestContext(request))
-
-
 
 @staff_member_required
 def update(request, url=None):
