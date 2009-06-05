@@ -1,13 +1,15 @@
 
-<h1>Directory: '/{{ directory }}'</h1>
+<h1>Directory: '/{{ directory.url }}'</h1>
 
-{% if directory %}
-    <a href="{% url list parent %}">Up one</a>
+{% if directory.url %}
+    <a href="{% url list directory.parent %}">Up one</a>
 {% endif %}
 
-<a href="{% url mkdir directory %}">Mkdir</a>
-<a href="{% url create directory %}">Create File</a>
-<a href="{% url upload directory %}">Upload</a>
+{% if directory.can_write %}
+	<a href="{% url mkdir directory.url %}">Mkdir</a>
+	<a href="{% url create directory.url %}">Create File</a>
+	<a href="{% url upload directory.url %}">Upload</a>
+{% endif %}
 
 <table>
 	<tr>
@@ -41,13 +43,16 @@
 		<td>{{ file.mtime|date:"m/d/Y" }}</td>
 		<td>{{ file.user }}</td>
 		<td>{{ file.group }}</td>
-		<td><a href="">View</a> /
+		<td>
+			<a href="">View</a> /
 			{% if file.directory %}
-				<a href="{% url rename file.filename %}">Edit</a> /
+				{% if directory.can_write %}
+					<a href="{% url rename file.fileurl %}">Edit</a> /
+				{% endif %}
 			{% else %}
-				<a href="{% url update file.filename %}">Edit</a> /
+				<a href="{% url update file.fileurl %}">Edit</a> /
 			{% endif %}
-			<a href="{% url copy file.filename %}">Copy</a></td>
+			<a href="{% url copy file.fileurl %}">Copy</a></td>
 	</tr>
 {% endfor %}
 

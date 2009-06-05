@@ -9,7 +9,7 @@ from django import http, template
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 
 from file_manager import forms
 
@@ -62,8 +62,6 @@ def index(request, url=None):
     perms = [ '---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx' ]
 
     clean_url = _clean_path(url)
-    
-    parent = '/'.join(clean_url.split('/')[:-1])
 
     # Stuff the files in here.
     files = []
@@ -71,6 +69,21 @@ def index(request, url=None):
     full_path = os.path.join(_get_document_root(), clean_url)
 
     listing = os.listdir(full_path)
+  
+    directory = {}
+
+    directory['url'] = clean_url
+    directory['parent'] = '/'.join(clean_url.split('/')[:-1])
+
+    if os.access(full_path, os.R_OK):
+        directory['can_read'] = True
+    else:
+        directory['can_read'] = False 
+    
+    if os.access(full_path, os.W_OK):
+        directory['can_write'] = True
+    else:
+        directory['can_write'] = False
 
     for file in listing:
         itemstat = os.stat(os.path.join(full_path, file))
@@ -115,15 +128,37 @@ def index(request, url=None):
         files.append(item)
     
     return render_to_response("admin/file_manager/index.html", 
-                              {'directory': clean_url,
-                               'parent': parent,
+                              {'directory': directory,
                                'files': files,},
                               context_instance=template.RequestContext(request))
 index = staff_member_required(index)
 
 @staff_member_required
 def mkdir(request, url=None):
-    pass
+
+    # Not really happy about the l/rstrips.
+    clean_url = _clean_path(url)
+    parent = '/'.join(clean_url.split('/')[:-1])
+    full_path = os.path.join(_get_document_root(), clean_url)
+
+    if request.method == 'POST': 
+        form = forms.DirectoryForm(request.POST) 
+
+        if form.is_valid(): 
+            new = os.path.join(form.cleaned_data['parent'], 
+                               form.cleaned_data['name'])
+
+            #Make the directory
+            os.mkdir(new)
+
+            return redirect('list', url=clean_url)
+    else:
+        data = {'parent':full_path}
+        form = forms.DirectoryForm(initial=data) # An unbound form 
+
+    return render_to_response("admin/file_manager/mkdir.html", 
+                              {'form': form, 'url': url,},
+                              context_instance=template.RequestContext(request))
 
 @staff_member_required
 def delete(request, url=None):
@@ -132,27 +167,30 @@ def delete(request, url=None):
 @staff_member_required
 def rename(request, url=None):
 
+    # Not really happy about the l/rstrips.
     clean_url = _clean_path(url)
-
     parent = '/'.join(clean_url.split('/')[:-1])
-    
     full_path = os.path.join(_get_document_root(), clean_url)
+    full_parent = os.path.join(_get_document_root(), parent).rstrip('/')
+    directory = clean_url.replace(parent, "", 1).lstrip('/')
 
     if request.method == 'POST': 
         form = forms.DirectoryForm(request.POST) 
 
         if form.is_valid(): 
-            #form.save()
-            
-            return redirect('student-index', plan=plan)
+            new = os.path.join(form.cleaned_data['parent'], 
+                               form.cleaned_data['name'])
+
+            #Rename the directory
+            os.rename(full_path, new)
+
+            return redirect('list', url=parent)
     else:
-        form = forms.DirectoryForm() # An unbound form 
-        #form.parent.path = full_path
-        #form.parent.recursive = True
+        data = {'parent':full_parent, 'name':directory}
+        form = forms.DirectoryForm(initial=data) # An unbound form 
 
     return render_to_response("admin/file_manager/rename.html", 
-                              {'form': form,
-                               'url': url,},
+                              {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
 
 @staff_member_required
