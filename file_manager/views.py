@@ -1,50 +1,14 @@
 import os
-import urllib
-
 from datetime import datetime
 from grp import getgrgid
 from pwd import getpwuid
 
 from django import http, template
-from django.core.exceptions import ImproperlyConfigured
-from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response, redirect
 
 from file_manager import forms
-
-def _get_document_root():
-    if not settings.DOCUMENT_ROOT:
-        raise ImproperlyConfigured, 'file_manager requires DOCUMENT_ROOT variable be defined in settings.py' 
-
-    return settings.DOCUMENT_ROOT
-
-def _clean_path(url):
-    """
-    Makes the path safe from ..
-    """
-    if not url:
-        return '' 
-
-    result = ''
-    path = os.path.normpath(urllib.unquote(url))
-    path = path.lstrip('/')
-    for part in path.split('/'):
-        if not part:
-            # Strip empty path components.
-            continue
-        drive, part = os.path.splitdrive(part)
-        head, part = os.path.split(part)
-        if part in (os.curdir, os.pardir):
-            # Strip '.' and '..' in path.
-            continue
-        result = os.path.join(result, part).replace('\\', '/')
-        
-    if result and path != result or not path:
-        result = ''
-    
-    return result
-    
+from file_manager import utils
 
 @staff_member_required
 def create(request, url=None):
@@ -61,12 +25,12 @@ def index(request, url=None):
  
     perms = [ '---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx' ]
 
-    clean_url = _clean_path(url)
+    clean_url = utils.clean_path(url)
 
     # Stuff the files in here.
     files = []
 
-    full_path = os.path.join(_get_document_root(), clean_url)
+    full_path = os.path.join(utils.get_document_root(), clean_url)
 
     listing = os.listdir(full_path)
   
@@ -137,9 +101,9 @@ index = staff_member_required(index)
 def mkdir(request, url=None):
 
     # Not really happy about the l/rstrips.
-    clean_url = _clean_path(url)
+    clean_url = utils.clean_path(url)
     parent = '/'.join(clean_url.split('/')[:-1])
-    full_path = os.path.join(_get_document_root(), clean_url)
+    full_path = os.path.join(utils.get_document_root(), clean_url)
 
     if request.method == 'POST': 
         form = forms.DirectoryForm(request.POST) 
@@ -168,10 +132,10 @@ def delete(request, url=None):
 def rename(request, url=None):
 
     # Not really happy about the l/rstrips.
-    clean_url = _clean_path(url)
+    clean_url = utils.clean_path(url)
     parent = '/'.join(clean_url.split('/')[:-1])
-    full_path = os.path.join(_get_document_root(), clean_url)
-    full_parent = os.path.join(_get_document_root(), parent).rstrip('/')
+    full_path = os.path.join(utils.get_document_root(), clean_url)
+    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
     directory = clean_url.replace(parent, "", 1).lstrip('/')
 
     if request.method == 'POST': 
@@ -195,7 +159,24 @@ def rename(request, url=None):
 
 @staff_member_required
 def update(request, url=None):
-    pass
+    clean_url = utils.clean_path(url)
+    parent = '/'.join(clean_url.split('/')[:-1])
+    full_path = os.path.join(utils.get_document_root(), clean_url)
+
+    if request.method == 'POST': 
+        form = forms.DirectoryForm(request.POST) 
+
+        if form.is_valid(): 
+            #Rename the directory
+
+            return redirect('list', url=parent)
+    else:
+        data = {}
+        form = forms.DirectoryForm(initial=data) # An unbound form 
+
+    return render_to_response("admin/file_manager/update.html", 
+                              {'form': form, 'url': url,},
+                              context_instance=template.RequestContext(request))
 
 @staff_member_required
 def upload(request, url=None):

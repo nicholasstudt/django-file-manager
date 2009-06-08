@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'^/update/(?P<url>.*)$', 'file_manager.views.update', name='update'),
     url(r'^/upload/(?P<url>.*)$', 'file_manager.views.upload', name='upload'),
 
+
     # Need to have a "root" for viewing, so we don't get clash with
     # actions above. 
     url(r'^/list/(?P<url>.*)$', 'file_manager.views.index', name='list'),
