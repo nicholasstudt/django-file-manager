@@ -103,20 +103,18 @@ def mkdir(request, url=None):
     # Not really happy about the l/rstrips.
     clean_url = utils.clean_path(url)
     parent = '/'.join(clean_url.split('/')[:-1])
-    full_path = os.path.join(utils.get_document_root(), clean_url)
+    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
 
     if request.method == 'POST': 
         form = forms.DirectoryForm(request.POST) 
 
         if form.is_valid(): 
-            new = os.path.join(form.cleaned_data['parent'], 
-                               form.cleaned_data['name'])
-
             #Make the directory
-            os.mkdir(new)
+            os.mkdir(os.path.join(full_parent, form.cleaned_data['name']))
 
             return redirect('list', url=clean_url)
     else:
+        full_path = os.path.join(utils.get_document_root(), clean_url)
         data = {'parent':full_path}
         form = forms.DirectoryForm(initial=data) # An unbound form 
 
@@ -129,7 +127,7 @@ def delete(request, url=None):
     pass
 
 @staff_member_required
-def rename(request, url=None):
+def move(request, url=None):
 
     # Not really happy about the l/rstrips.
     clean_url = utils.clean_path(url)
@@ -142,8 +140,7 @@ def rename(request, url=None):
         form = forms.DirectoryForm(request.POST) 
 
         if form.is_valid(): 
-            new = os.path.join(form.cleaned_data['parent'], 
-                               form.cleaned_data['name'])
+            new = os.path.join(full_parent, form.cleaned_data['name'])
 
             #Rename the directory
             os.rename(full_path, new)
@@ -152,6 +149,34 @@ def rename(request, url=None):
     else:
         data = {'parent':full_parent, 'name':directory}
         form = forms.DirectoryForm(initial=data) # An unbound form 
+
+    return render_to_response("admin/file_manager/move.html", 
+                              {'form': form, 'url': url,},
+                              context_instance=template.RequestContext(request))
+
+@staff_member_required
+def rename(request, url=None):
+
+    # Not really happy about the l/rstrips.
+    clean_url = utils.clean_path(url)
+    parent = '/'.join(clean_url.split('/')[:-1])
+    full_path = os.path.join(utils.get_document_root(), clean_url)
+    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
+    directory = clean_url.replace(parent, "", 1).lstrip('/')
+
+    if request.method == 'POST': 
+        form = forms.NameForm(request.POST) 
+
+        if form.is_valid(): 
+            new = os.path.join(full_parent, form.cleaned_data['name'])
+
+            #Rename the directory
+            os.rename(full_path, new)
+
+            return redirect('list', url=parent)
+    else:
+        data = {'name':directory}
+        form = forms.NameForm(initial=data) # An unbound form 
 
     return render_to_response("admin/file_manager/rename.html", 
                               {'form': form, 'url': url,},
@@ -167,7 +192,6 @@ def update(request, url=None):
         form = forms.DirectoryForm(request.POST) 
 
         if form.is_valid(): 
-            #Rename the directory
 
             return redirect('list', url=parent)
     else:

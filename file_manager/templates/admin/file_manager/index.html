@@ -45,14 +45,15 @@
 		<td>{{ file.group }}</td>
 		<td>
 			<a href="">View</a> /
-			{% if file.directory %}
-				{% if directory.can_write %}
-					<a href="{% url rename file.fileurl %}">Edit</a> /
-				{% endif %}
-			{% else %}
+			{% if directory.can_write %}
+				<a href="{% url rename file.fileurl %}">R</a> /
+				<a href="{% url move file.fileurl %}">M</a> /
+			{% endif %}
+			{% if not file.directory %}
 				<a href="{% url update file.fileurl %}">Edit</a> /
 			{% endif %}
-			<a href="{% url copy file.fileurl %}">Copy</a></td>
+			<a href="{% url copy file.fileurl %}">Copy</a>
+			</td>
 	</tr>
 {% endfor %}
 

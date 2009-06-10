@@ -65,6 +65,12 @@ class DirectoryForm(forms.Form):
 
         return parent
 
+class NameForm(forms.Form):
+    name = forms.CharField()
+
+class ContentForm(forms.Form):
+    content = forms.CharField()
+
 class FileForm(forms.Form):
 
     if not settings.DOCUMENT_ROOT:
