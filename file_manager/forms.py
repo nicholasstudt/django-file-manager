@@ -55,7 +55,6 @@ class DirectoryForm(forms.Form):
     document_root = settings.DOCUMENT_ROOT
 
     parent = DirectoryPathField(path=document_root,recursive=True,showroot=True)
-    name = forms.CharField()
 
     def clean_parent(self):
         parent = self.cleaned_data['parent']
@@ -67,6 +66,14 @@ class DirectoryForm(forms.Form):
 
 class NameForm(forms.Form):
     name = forms.CharField()
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+       
+        if os.access(name, os.F_OK):
+            raise forms.ValidationError("Name already exists.")
+
+        return name 
 
 class ContentForm(forms.Form):
     content = forms.CharField()
@@ -92,4 +99,3 @@ class UploadForm(forms.Form):
     parent = DirectoryPathField(path=document_root,recursive=True)
     name = forms.CharField()
     content = forms.CharField()
-

@@ -12,32 +12,34 @@ from file_manager import utils
 
 @staff_member_required
 def create(request, url=None):
+    # Create a new text file.
     pass
 
 @staff_member_required
 def copy(request, url=None):
+    # Copy a file/directory to a new location
     pass
 
 def index(request, url=None):
     """
-    Show list of files in a directory
+        Show list of files in a url
     """
  
     perms = [ '---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx' ]
 
-    clean_url = utils.clean_path(url)
+    url = utils.clean_path(url)
 
     # Stuff the files in here.
     files = []
 
-    full_path = os.path.join(utils.get_document_root(), clean_url)
+    full_path = os.path.join(utils.get_document_root(), url)
 
     listing = os.listdir(full_path)
   
     directory = {}
 
-    directory['url'] = clean_url
-    directory['parent'] = '/'.join(clean_url.split('/')[:-1])
+    directory['url'] = url
+    directory['parent'] = '/'.join(url.split('/')[:-1])
 
     if os.access(full_path, os.R_OK):
         directory['can_read'] = True
@@ -54,7 +56,7 @@ def index(request, url=None):
 
         item = {}
         item['filename'] = file
-        item['fileurl'] = os.path.join(clean_url, file)
+        item['fileurl'] = os.path.join(url, file)
         item['user'] = getpwuid(itemstat.st_uid)[0]
         item['group'] = getgrgid(itemstat.st_gid)[0]
 
@@ -99,24 +101,27 @@ index = staff_member_required(index)
 
 @staff_member_required
 def mkdir(request, url=None):
+    """ 
+        Make a new directory at the current url.
+    """
 
-    # Not really happy about the l/rstrips.
-    clean_url = utils.clean_path(url)
-    parent = '/'.join(clean_url.split('/')[:-1])
-    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
+    url = utils.clean_path(url)
+    full_path = os.path.join(utils.get_document_root(), url)
 
     if request.method == 'POST': 
-        form = forms.DirectoryForm(request.POST) 
+        form = forms.NameForm(request.POST,initial={'path':full_path}) 
+
+        # FIXME: Check that the directory to make doesn't already exist.
+        # parent = '/'.join(clean_url.split('/')[:-1])
 
         if form.is_valid(): 
             #Make the directory
-            os.mkdir(os.path.join(full_parent, form.cleaned_data['name']))
 
-            return redirect('list', url=clean_url)
+            os.mkdir(os.path.join(full_path, form.cleaned_data['name']))
+
+            return redirect('list', url=url)
     else:
-        full_path = os.path.join(utils.get_document_root(), clean_url)
-        data = {'parent':full_path}
-        form = forms.DirectoryForm(initial=data) # An unbound form 
+        form = forms.NameForm() # An unbound form 
 
     return render_to_response("admin/file_manager/mkdir.html", 
                               {'form': form, 'url': url,},
@@ -124,57 +129,67 @@ def mkdir(request, url=None):
 
 @staff_member_required
 def delete(request, url=None):
+    # Delete a file/directory
     pass
 
 @staff_member_required
 def move(request, url=None):
+    """
+        Move file/directory to a new location.
+    """
 
     # Not really happy about the l/rstrips.
-    clean_url = utils.clean_path(url)
-    parent = '/'.join(clean_url.split('/')[:-1])
-    full_path = os.path.join(utils.get_document_root(), clean_url)
+    url = utils.clean_path(url)
+
+    parent = '/'.join(url.split('/')[:-1])
     full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
-    directory = clean_url.replace(parent, "", 1).lstrip('/')
 
     if request.method == 'POST': 
         form = forms.DirectoryForm(request.POST) 
 
         if form.is_valid(): 
-            new = os.path.join(full_parent, form.cleaned_data['name'])
+    
+            directory = url.replace(parent, "", 1).lstrip('/')
+            full_path = os.path.join(utils.get_document_root(), url)
+
+            new = os.path.join(form.cleaned_data['parent'], directory)
 
             #Rename the directory
             os.rename(full_path, new)
 
             return redirect('list', url=parent)
     else:
-        data = {'parent':full_parent, 'name':directory}
-        form = forms.DirectoryForm(initial=data) # An unbound form 
+        form = forms.DirectoryForm(initial={'parent':full_parent}) 
 
     return render_to_response("admin/file_manager/move.html", 
-                              {'form': form, 'url': url,},
+                              {'form': form, 
+                               'current': "/%s" % parent,},
                               context_instance=template.RequestContext(request))
 
 @staff_member_required
 def rename(request, url=None):
+    """
+        Rename
+    """
 
     # Not really happy about the l/rstrips.
-    clean_url = utils.clean_path(url)
-    parent = '/'.join(clean_url.split('/')[:-1])
-    full_path = os.path.join(utils.get_document_root(), clean_url)
-    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
-    directory = clean_url.replace(parent, "", 1).lstrip('/')
+    url = utils.clean_path(url)
+    parent = '/'.join(url.split('/')[:-1])
 
     if request.method == 'POST': 
         form = forms.NameForm(request.POST) 
 
         if form.is_valid(): 
+            full_path = os.path.join(utils.get_document_root(), url)
+            full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
             new = os.path.join(full_parent, form.cleaned_data['name'])
 
-            #Rename the directory
+            # Rename 
             os.rename(full_path, new)
 
             return redirect('list', url=parent)
     else:
+        directory = url.replace(parent, "", 1).lstrip('/')
         data = {'name':directory}
         form = forms.NameForm(initial=data) # An unbound form 
 
@@ -184,6 +199,9 @@ def rename(request, url=None):
 
 @staff_member_required
 def update(request, url=None):
+    """
+        Update
+    """
     clean_url = utils.clean_path(url)
     parent = '/'.join(clean_url.split('/')[:-1])
     full_path = os.path.join(utils.get_document_root(), clean_url)
@@ -204,10 +222,10 @@ def update(request, url=None):
 
 @staff_member_required
 def upload(request, url=None):
+    """
+        Upload
+    """
     return render_to_response("admin/file_manager/upload.html", 
                               {'data': request.path,
                                'url': url,},
                               context_instance=template.RequestContext(request))
-
-
-

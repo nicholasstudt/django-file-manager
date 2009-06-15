@@ -1,7 +1,8 @@
-<h1>Rename Folder</h1>
+<h1>Move</h1>
 
+Current Location: {{ current }}<br>
+New Location:
 <form action="" method="POST">
-
 {% for field in form %}
   {% if field.is_hidden %}
     {{ field }}

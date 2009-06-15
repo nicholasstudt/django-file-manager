@@ -1,7 +1,7 @@
 Revision history
 
-- Should Move be seperated from the create/update/rename operations?
+- Make rename check that name doesn't already exist.
 
 1.0.0-rc1 :
-	- Mkdir, rename directory, listing working.
 	- Added utils.py to have common utilities.
+    - Rename works.
