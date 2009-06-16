@@ -49,6 +49,11 @@ class DirectoryPathField(forms.ChoiceField):
 
 class DirectoryForm(forms.Form):
 
+#    def __init__(self, path_server, path, *args, **kwargs):
+#        self.PATH_SERVER = path_server
+#        self.path = path
+#        super(DirectoryForm, self).__init__(*args, **kwargs)
+
     if not settings.DOCUMENT_ROOT:
         raise exceptions.ImproperlyConfigured, "DOCUMENT_ROOT variable not defined in settings.py"
 
@@ -65,6 +70,14 @@ class DirectoryForm(forms.Form):
         return parent
 
 class NameForm(forms.Form):
+
+#    def __init__(self, path_server, path, *args, **kwargs):
+#        self.PATH_SERVER = path_server
+#        self.path = path
+#        super(DirectoryForm, self).__init__(*args, **kwargs)
+
+
+
     name = forms.CharField()
 
     def clean_name(self):
@@ -76,17 +89,6 @@ class NameForm(forms.Form):
         return name 
 
 class ContentForm(forms.Form):
-    content = forms.CharField()
-
-class FileForm(forms.Form):
-
-    if not settings.DOCUMENT_ROOT:
-        raise exceptions.ImproperlyConfigured, "DOCUMENT_ROOT variable not defined in settings.py"
-
-    document_root = settings.DOCUMENT_ROOT
-
-    parent = DirectoryPathField(path=document_root,recursive=True)
-    name = forms.CharField()
     content = forms.CharField()
 
 class UploadForm(forms.Form):
