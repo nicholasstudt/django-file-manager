@@ -3,6 +3,9 @@ import os
 from django.conf import settings
 from django import forms
 from django.core import exceptions
+from django.utils.translation import ugettext as _
+
+from file_manager import utils
 
 class DirectoryPathField(forms.ChoiceField):
     """ 
@@ -49,55 +52,69 @@ class DirectoryPathField(forms.ChoiceField):
 
 class DirectoryForm(forms.Form):
 
-#    def __init__(self, path_server, path, *args, **kwargs):
-#        self.PATH_SERVER = path_server
-#        self.path = path
-#        super(DirectoryForm, self).__init__(*args, **kwargs)
+    def __init__(self, file, original, *args, **kwargs):
+        self.file = file 
+        self.original = original 
+        super(DirectoryForm, self).__init__(*args, **kwargs)
 
-    if not settings.DOCUMENT_ROOT:
-        raise exceptions.ImproperlyConfigured, "DOCUMENT_ROOT variable not defined in settings.py"
-
-    document_root = settings.DOCUMENT_ROOT
+    document_root = utils.get_document_root()
 
     parent = DirectoryPathField(path=document_root,recursive=True,showroot=True)
 
     def clean_parent(self):
         parent = self.cleaned_data['parent']
-       
+
+        path = os.path.join(parent, self.file)
+        
+        if self.original != path: # Let no change work correctly.
+            if os.access(path, os.F_OK):
+                raise forms.ValidationError(_('Destination already exists.'))
+
         if not os.access(parent, os.W_OK):
-            raise forms.ValidationError("Can not write to directory.")
+            raise forms.ValidationError(_('Can not write to directory.'))
 
         return parent
 
 class NameForm(forms.Form):
 
-#    def __init__(self, path_server, path, *args, **kwargs):
-#        self.PATH_SERVER = path_server
-#        self.path = path
-#        super(DirectoryForm, self).__init__(*args, **kwargs)
-
-
+    def __init__(self, path, original, *args, **kwargs):
+        self.path = path
+        self.original = original
+        super(NameForm, self).__init__(*args, **kwargs)
 
     name = forms.CharField()
 
     def clean_name(self):
         name = self.cleaned_data['name']
-       
-        if os.access(name, os.F_OK):
-            raise forms.ValidationError("Name already exists.")
+        
+        path = os.path.join(self.path, name)
+
+        if self.original != path: # Let no change work correctly.
+            if os.access(path, os.F_OK):
+                raise forms.ValidationError(_('Name already exists.'))
 
         return name 
 
 class ContentForm(forms.Form):
-    content = forms.CharField()
+    content = forms.CharField(widget=forms.widgets.Textarea())
 
 class UploadForm(forms.Form):
 
-    if not settings.DOCUMENT_ROOT:
-        raise exceptions.ImproperlyConfigured, "DOCUMENT_ROOT variable not defined in settings.py"
+    def __init__(self, path, *args, **kwargs):
+        self.path = path
+        super(UploadForm, self).__init__(*args, **kwargs)
 
-    document_root = settings.DOCUMENT_ROOT
+    file = forms.FileField()
 
-    parent = DirectoryPathField(path=document_root,recursive=True)
-    name = forms.CharField()
-    content = forms.CharField()
+    def clean_file(self):
+        filename = self.cleaned_data['file'].name 
+
+        if os.access(os.path.join(self.path, filename), os.F_OK):
+            raise forms.ValidationError(_('File already exists.')) 
+        
+        # CHECK FILESIZE
+        filesize = self.cleaned_data['file'].size
+        if filesize > utils.get_max_upload_size():
+            raise forms.ValidationError(_(u'Filesize exceeds allowed Upload Size.'))
+
+        return self.cleaned_data['file']

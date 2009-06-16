@@ -1,7 +1,14 @@
-Revision history
 
-- Make rename check that name doesn't already exist.
+Todo:
+   delete   - Make directories recursively delete.
+   create   Name/ContentForm 
+   copy     Directory/Name Form
+
+   - Make the directory selector sort properly
+   - Preserve the line ending when doing an update.
+
+Revision history
 
 1.0.0-rc1 :
 	- Added utils.py to have common utilities.
-    - Rename works.
+    - Rename, Make directory, Move, Upload, update

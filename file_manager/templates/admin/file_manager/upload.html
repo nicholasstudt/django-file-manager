@@ -1,0 +1,23 @@
+<h1>Upload</h1>
+
+<form enctype="multipart/form-data" action="" method="POST">
+
+{% for field in form %}
+  {% if field.is_hidden %}
+    {{ field }}
+  {% else %}
+    <div class="form{% if field.errors %} error{% endif %}">
+      {% if field.errors %}{{ field.errors }}{% endif %}
+      {{ field.label_tag }} 
+      {{ field }}
+      {{ field.help_text|safe }}
+    </div>
+  {% endif %}
+{% endfor %}
+
+<div class="form">
+    <input name="submit" type="submit" value="Save" />
+</div>
+
+</form>
+

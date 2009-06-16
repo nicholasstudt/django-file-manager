@@ -1,0 +1,20 @@
+{% block content %}
+
+<p>
+    Are you sure you want to delete the following item{{ files|pluralize}}:
+</p>
+
+<ul>
+    {% for item in files %}
+        <li>{{ item }}</li>
+    {% endfor %}
+</ul>
+
+<form action="" method="post">
+<div>
+    <input type="hidden" name="post" value="yes" />
+    <input type="submit" value="Yes, I'm sure" />
+</div>
+</form>
+
+{% endblock %}

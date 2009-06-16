@@ -32,6 +32,7 @@
 		<td>
 			{% if file.directory %}D{% endif %}	
 			<a href="{% if file.directory %}{% url list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
+
 		</td>
 		<td>
 			{% if not file.directory %}
@@ -44,16 +45,15 @@
 		<td>{{ file.user }}</td>
 		<td>{{ file.group }}</td>
 		<td>
-			<a href="">View</a> /
 			{% if directory.can_write %}
 				<a href="{% url rename file.fileurl %}">R</a> /
 				<a href="{% url move file.fileurl %}">M</a> /
 			{% endif %}
-			{% if not file.directory %}
+			{% if not file.directory and file.can_edit  %}
 				<a href="{% url update file.fileurl %}">Edit</a> /
 			{% endif %}
 			<a href="{% url copy file.fileurl %}">Copy</a>
-			</td>
+		</td>
 	</tr>
 {% endfor %}
 
