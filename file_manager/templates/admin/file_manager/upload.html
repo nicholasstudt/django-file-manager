@@ -1,3 +1,16 @@
+{% extends "admin/file_manager/base.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+	<a href="../../">{% trans "Home" %}</a> &rsaquo;
+	<a href="{% url index %}">{% trans "File Manager" %}</a> &rsaquo;
+	{% trans 'Upload File' %}
+</div>
+{% endblock %}
+
+
+{% block content %}
 <h1>Upload</h1>
 
 <form enctype="multipart/form-data" action="" method="POST">
@@ -21,3 +34,4 @@
 
 </form>
 
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 
 class Objects(models.Model):
     class Meta:
@@ -11,3 +12,5 @@ class Objects(models.Model):
             ("can_rename", "Can rename file/directory"),
             ("can_mkdir", "Can make directory"),
         )
+#admin.site.register(Objects)
+

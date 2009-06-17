@@ -1,4 +1,15 @@
+{% extends "admin/file_manager/base.html" %}
+{% load i18n %}
 
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+	<a href="">{% trans "Home" %}</a> &rsaquo;
+	<a href="{% url index %}">{% trans "File Manager" %}</a> &rsaquo;
+	{% trans 'Listing' %}
+</div>
+{% endblock %}
+
+{% block content %}
 <h1>Directory: '/{{ directory.url }}'</h1>
 
 {% if directory.url %}
@@ -48,6 +59,7 @@
 			{% if directory.can_write %}
 				<a href="{% url rename file.fileurl %}">R</a> /
 				<a href="{% url move file.fileurl %}">M</a> /
+				<a href="{% url delete file.fileurl %}">D</a> /
 			{% endif %}
 			{% if not file.directory and file.can_edit  %}
 				<a href="{% url update file.fileurl %}">Edit</a> /
@@ -60,3 +72,5 @@
 {% endfor %}
 
 </table>
+
+{% endblock %}

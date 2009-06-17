@@ -15,7 +15,31 @@ from file_manager import utils
 @staff_member_required
 def create(request, url=None):
     # Create a new text file.
-    pass
+    url = utils.clean_path(url)
+    parent = '/'.join(url.split('/')[:-1])
+    full_path = os.path.join(utils.get_document_root(), url)
+
+    if request.method == 'POST': 
+        form = forms.CreateForm(full_path, None, request.POST) 
+
+        if form.is_valid(): 
+            file = open(os.path.join(full_path, form.cleaned_data['name']), 'w+')
+
+            # FIXME: This shoule check the originals line ending and
+            # preserve it.
+
+            # This makes it be \r\n be just \n
+            file.write(form.cleaned_data['content'].replace('\r\n', '\n'))
+            file.close()
+
+            return redirect('list', url=url)
+    else:
+        # Read the data from file
+        form = forms.CreateForm(full_path, None) # An unbound form 
+
+    return render_to_response("admin/file_manager/create.html", 
+                              {'form': form, 'url': url,},
+                              context_instance=template.RequestContext(request))
 
 @staff_member_required
 def copy(request, url=None):
@@ -143,32 +167,51 @@ def delete(request, url=None):
     url = utils.clean_path(url)
     parent = '/'.join(url.split('/')[:-1])
     full_path = os.path.join(utils.get_document_root(), url)
+    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
 
     if request.method == 'POST': 
         
         # If this is a directory, do the walk
         if os.path.isdir(full_path):
-            pass
+            for root, dirs, files in os.walk(full_path, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+
+            os.rmdir(full_path)
         else:
             os.remove(full_path)
 
         return redirect('list', url=parent)
 
-    files = []
+    filelist = []
+    errorlist = []
 
     # If this is a directory, generate the list of files to be removed.
     if os.path.isdir(full_path):
-        files.append(url)
-#        for root, dirs, files, in os.walk(full_path):
-#            for name in files: 
-#                files.append(os.path.join(full_path, name))
-#            for name in dirs:
-#                files.append(os.path.join(full_path, name))
+        filelist.append("/%s" % url)
+        for root, dirs, files, in os.walk(full_path):
+            for name in files: 
+                f = os.path.join(root, name).replace(full_parent, '', 1)
+                if not os.access(os.path.join(root), os.W_OK):
+                    errorlist.append(f)
+                filelist.append(f)
+
+            for name in dirs:
+                d = os.path.join(root, name).replace(full_parent, '', 1)
+                if not os.access(os.path.join(root), os.W_OK):
+                    errorlist.append(d)
+                filelist.append(d)
     else:
-        files.append(url)
+        if not os.access(full_path, os.W_OK):
+            errorlist.append("/%s" % url)
+
+        filelist.append("/%s" % url)
     
     return render_to_response("admin/file_manager/delete.html", 
-                              {'url': url, 'files': files},
+                              {'url': url, 'files': sorted(filelist),
+                               'errorlist':sorted(errorlist)},
                               context_instance=template.RequestContext(request))
 
 @staff_member_required

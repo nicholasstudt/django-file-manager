@@ -48,7 +48,7 @@ class DirectoryPathField(forms.ChoiceField):
                         self.choices.append((full_file, full_file.replace(path, "", 1)))
             except OSError:
                 pass
-        self.widget.choices = self.choices
+        self.widget.choices = sorted(self.choices)
 
 class DirectoryForm(forms.Form):
 
@@ -97,6 +97,9 @@ class NameForm(forms.Form):
 
 class ContentForm(forms.Form):
     content = forms.CharField(widget=forms.widgets.Textarea())
+
+class CreateForm(NameForm,ContentForm):
+    pass
 
 class UploadForm(forms.Form):
 

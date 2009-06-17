@@ -1,14 +1,17 @@
 
 Todo:
-   delete   - Make directories recursively delete.
-   create   Name/ContentForm 
-   copy     Directory/Name Form
+   - copy     Directory/Name Form
 
-   - Make the directory selector sort properly
-   - Preserve the line ending when doing an update.
+   - Preserve the line ending when doing an update.(forces \n now)
+   - Make the files to delete links to ... ?
+   - Fix all url names to be "admin_file_manger_<aciton>" -- remove clash 
+   - Fix template to fit into default admin, look reasonable.
 
 Revision history
 
 1.0.0-rc1 :
 	- Added utils.py to have common utilities.
     - Rename, Make directory, Move, Upload, update
+    - Made the directory selector sort properly
+    - Delete works. 
+    - Create new file works. 

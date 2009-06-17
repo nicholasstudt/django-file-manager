@@ -1,3 +1,16 @@
+{% extends "admin/file_manager/base.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+	<a href="../../">{% trans "Home" %}</a> &rsaquo;
+	<a href="{% url index %}">{% trans "File Manager" %}</a> &rsaquo;
+	{% trans 'Rename' %}
+</div>
+{% endblock %}
+
+
+{% block content %}
 <h1>Rename Folder</h1>
 
 <form action="" method="POST">
@@ -16,9 +29,9 @@
 {% endfor %}
 
 <div class="form">
-    <a href="{% url delete url %}">Delete</a>
     <input name="submit" type="submit" value="Save" />
 </div>
 
 </form>
 
+{% endblock %}

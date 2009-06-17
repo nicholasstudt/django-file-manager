@@ -1,3 +1,16 @@
+{% extends "admin/file_manager/base.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+	<a href="../../">{% trans "Home" %}</a> &rsaquo;
+	<a href="{% url index %}">{% trans "File Manager" %}</a> &rsaquo;
+	{% trans 'Move' %}
+</div>
+{% endblock %}
+
+
+{% block content %}
 <h1>Move</h1>
 
 Current Location: {{ current }}<br>
@@ -17,9 +30,9 @@ New Location:
 {% endfor %}
 
 <div class="form">
-    <a href="{% url delete url %}">Delete</a>
     <input name="submit" type="submit" value="Save" />
 </div>
 
 </form>
 
+{% endblock %}

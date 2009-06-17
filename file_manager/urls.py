@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
 
+
     # Directory and File operations
     url(r'^/delete/(?P<url>.*)$', 'file_manager.views.delete', name='delete'),
     url(r'^/copy/(?P<url>.*)$', 'file_manager.views.copy', name='copy'),
