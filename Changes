@@ -3,11 +3,9 @@ Todo:
    - copy     Directory/Name Form
 
    - Preserve the line ending when doing an update.(forces \n now)
-   - Make the files to delete links to ... ?
    - Fix all url names to be "admin_file_manger_<aciton>" -- remove clash 
-   - Fix template to fit into default admin, look reasonable.
    - Make grouped actions work for delete.
-   - Split permissions to file/directories vs objects
+   - Ensure all failures 404 and don't toss errors.
 
 Revision history
 
@@ -17,3 +15,6 @@ Revision history
     - Made the directory selector sort properly
     - Delete works. 
     - Create new file works. 
+    - Split permissions to file/directories vs objects
+	- Fix templates to look like the default admin.
+    - Files to delete link to the live site.

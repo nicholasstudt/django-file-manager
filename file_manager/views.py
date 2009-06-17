@@ -60,7 +60,10 @@ def index(request, url=None):
 
     full_path = os.path.join(utils.get_document_root(), url)
 
-    listing = os.listdir(full_path)
+    try:
+        listing = os.listdir(full_path)
+    except OSError:
+        raise http.Http404
   
     directory = {}
 
@@ -244,7 +247,7 @@ def move(request, url=None):
         form = forms.DirectoryForm(directory, full_path, initial={'parent':full_parent}) 
 
     return render_to_response("admin/file_manager/move.html", 
-                              {'form': form, 
+                              {'form': form, 'url': url,
                                'current': "/%s" % parent,},
                               context_instance=template.RequestContext(request))
 

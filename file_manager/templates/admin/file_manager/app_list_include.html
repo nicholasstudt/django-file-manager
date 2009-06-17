@@ -1,0 +1,17 @@
+
+
+{% load i18n %}
+
+<div class="module">
+	<table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
+	<caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans
+%}</a></caption>
+	 <tr>
+		 <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th> 
+		<td>&nbsp;</td> 
+		<td>&nbsp;</td>
+            </tr>
+        {% endfor %}
+	</table>
+</div>
+

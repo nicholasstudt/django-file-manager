@@ -1,9 +1,15 @@
-{% extends "admin/file_manager/base.html" %}
-{% load i18n %}
+{% extends "admin/base_site.html" %}
+{% load i18n adminmedia %}
+
+{% block bodyclass %}change-list file_manager{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
+{% endblock %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-	<a href="">{% trans "Home" %}</a> &rsaquo;
+	<a href="{% url index %}../">{% trans "Home" %}</a> &rsaquo;
 	<a href="{% url index %}">{% trans "File Manager" %}</a> &rsaquo;
 	{% trans 'Listing' %}
 </div>
@@ -12,6 +18,7 @@
 {% block coltype %}flex{% endblock %}
 
 {% block content %}
+
 <div id="content-main">
 
 	<h1>Directory: '/{{ directory.url }}'</h1>
@@ -39,7 +46,6 @@ File{% endblocktrans %}
 
         </ul>
     {% endblock %}
-
   
 	<div class="module" id="changelist">
 	<div class="actions">
@@ -61,7 +67,6 @@ File{% endblocktrans %}
 
 	</div>
 
-
 <table cellspacing="0">
 	<thead>
 	<tr>
@@ -73,7 +78,7 @@ File{% endblocktrans %}
 		<th>Modified</th>
 		<th>User</th>
 		<th>Group</th>
-		<th>Actions</th>
+		<th colspan="4">Actions</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -101,17 +106,31 @@ File{% endblocktrans %}
 		<td>{{ file.mtime|date:"m/d/Y" }}</td>
 		<td>{{ file.user }}</td>
 		<td>{{ file.group }}</td>
+
+		<td>
+			{% if not file.directory and file.can_edit  %}
+			<a href="{% url update file.fileurl %}" class="changelink">Edit</a> 
+			{% endif %}
+		</td>
+
 		<td>
 			{% if directory.can_write %}
-				<a href="{% url rename file.fileurl %}">R</a> /
-				<a href="{% url move file.fileurl %}">M</a> /
-				<a href="{% url delete file.fileurl %}">D</a> /
+			<a href="{% url rename file.fileurl %}" class="changelink">Rename</a>
 			{% endif %}
-			{% if not file.directory and file.can_edit  %}
-				<a href="{% url update file.fileurl %}">Edit</a> /
-			{% endif %}
-			<a href="{% url copy file.fileurl %}">Copy</a>
 		</td>
+		<td>
+			{% if directory.can_write %}
+			<a href="{% url move file.fileurl %}" class="changelink">Move</a>
+			{% endif %}
+		</td>
+		<td>
+			{% if directory.can_write %}<a href="{% url delete file.fileurl %}" class="deletelink">Delete</a>{% endif %}
+		</td>
+		<!--
+		<td>
+			<a href="{% url copy file.fileurl %}">Copy</a> 
+		</td>
+		-->
 	</tr>
 {% endfor %}
 

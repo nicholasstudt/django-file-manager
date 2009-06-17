@@ -1,5 +1,9 @@
-{% extends "admin/file_manager/base.html" %}
-{% load i18n %}
+{% extends "admin/base_site.html" %}
+{% load i18n adminmedia %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
+
+{% block bodyclass %}file_manager change-form{% endblock %}
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
@@ -9,8 +13,11 @@
 </div>
 {% endblock %}
 
+{% block coltype %}colM{% endblock %}
+
 
 {% block content %}
+	<h1>Are you sure?</h1>
 
 {% if errorlist %}
 
@@ -21,18 +28,18 @@
 
 <ul>
     {% for item in errorlist %}
-        <li>{{ item }}</li>
+        <li><a href="{{item }}">{{ item }}</a></li>
     {% endfor %}
 </ul>
 
 {% else %}
 <p>
-    Are you sure you want to delete the following item{{ files|pluralize}}:
+    Are you sure you want to delete the following item{{ files|pluralize}}?
 </p>
 
 <ul>
     {% for item in files %}
-        <li>{{ item }}</li>
+        <li><a href="{{item }}">{{ item }}</a></li>
     {% endfor %}
 </ul>
 
