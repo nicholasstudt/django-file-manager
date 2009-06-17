@@ -6,11 +6,6 @@
 {% block extrahead %}{{ block.super }}
 {% endblock %}
 
-{% block sidebar %}
-Side Bar ?
-{% endblock %} 
-
-{% block coltype %}flex{% endblock %}
 
 {% block bodyclass %}change-list file_manager{% endblock %}
 
@@ -22,3 +17,6 @@ Side Bar ?
 	{{ block.super }}
 	<div class="breadcrumbs">{{ breadcrumbs }}</div>
 {% endblock %}
+
+{% block content %}{% endblock %}
+

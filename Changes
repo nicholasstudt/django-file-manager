@@ -6,6 +6,8 @@ Todo:
    - Make the files to delete links to ... ?
    - Fix all url names to be "admin_file_manger_<aciton>" -- remove clash 
    - Fix template to fit into default admin, look reasonable.
+   - Make grouped actions work for delete.
+   - Split permissions to file/directories vs objects
 
 Revision history
 

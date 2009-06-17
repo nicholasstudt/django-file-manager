@@ -9,39 +9,85 @@
 </div>
 {% endblock %}
 
+{% block coltype %}flex{% endblock %}
+
 {% block content %}
-<h1>Directory: '/{{ directory.url }}'</h1>
+<div id="content-main">
 
-{% if directory.url %}
-    <a href="{% url list directory.parent %}">Up one</a>
-{% endif %}
+	<h1>Directory: '/{{ directory.url }}'</h1>
 
-{% if directory.can_write %}
-	<a href="{% url mkdir directory.url %}">Mkdir</a>
-	<a href="{% url create directory.url %}">Create File</a>
-	<a href="{% url upload directory.url %}">Upload</a>
-{% endif %}
+    {% block object-tools %}
+        <ul class="object-tools">
+			{% if directory.can_write %}
+			<li>
+            <a href="{% url mkdir directory.url %}" class="addlink">
+              {% blocktrans with cl.opts.verbose_name as name %}Create Directory{% endblocktrans %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url create directory.url %}" class="addlink">
+              {% blocktrans with cl.opts.verbose_name as name %}Add File{% endblocktrans %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url upload directory.url %}" class="addlink">
+              {% blocktrans with cl.opts.verbose_name as name %}Upload
+File{% endblocktrans %}
+            </a>
+          </li>
+			{% endif %}
 
-<table>
+        </ul>
+    {% endblock %}
+
+  
+	<div class="module" id="changelist">
+	<div class="actions">
+	<!--
+	<form action="" method="post">
+		<label>Action: 
+		<select name="action"> 
+			<option value="" selected="selected">---------</option>
+			<option value="delete_selected">Delete selected tags</option>
+		</select>
+		</label>
+	<button type="submit" class="button" title="Run the selected action" name="index" value="0">Go</button>
+	-->
+	{% if directory.url %}
+		<a href="{% url list directory.parent %}">Up one Directory</a>
+	{% else %}
+		&nbsp;
+	{% endif %}
+
+	</div>
+
+
+<table cellspacing="0">
+	<thead>
 	<tr>
-		<td>Name</td>
-		<td>Size</td>
-		<td>Permissions</td>
-		<td>Created</td>
-		<td>Modified</td>
-		<td>User</td>
-		<td>Group</td>
-		<td>Actions</td>
+		<th></th>
+		<th>Name</th>
+		<th>Size</th>
+		<th>Permissions</th>
+		<th>Created</th>
+		<th>Modified</th>
+		<th>User</th>
+		<th>Group</th>
+		<th>Actions</th>
 	</tr>
+	</thead>
+	<tbody>
 
 {% regroup files|dictsortreversed:"directory" by directory as file_list %}
 
 {% for dfile in file_list %}
 
 {% for file in dfile.list|dictsort:"filename" %}
-	<tr>
+	<tr class="{% cycle 'row1' 'row2' %}">
 		<td>
 			{% if file.directory %}D{% endif %}	
+		</td>
+		<td>
 			<a href="{% if file.directory %}{% url list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
 
 		</td>
@@ -70,7 +116,13 @@
 {% endfor %}
 
 {% endfor %}
-
+	</tbody>
 </table>
 
+<p class="paginator">
+	{{ files|length }} file{{ files|pluralize }}
+</p>
+
+
+</div>
 {% endblock %}
