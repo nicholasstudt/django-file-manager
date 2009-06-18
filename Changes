@@ -1,15 +1,13 @@
 
 Todo:
-   - copy     Directory/Name Form
-
+   - Add file/directory copy
    - Preserve the line ending when doing an update.(forces \n now)
-   - Fix all url names to be "admin_file_manger_<aciton>" -- remove clash 
    - Make grouped actions work for delete.
    - Ensure all failures 404 and don't toss errors.
 
 Revision history
 
-1.0.0-rc1 :
+1.0.0-rc1 Wed Jun 17 22:40:26 CDT 2009:
 	- Added utils.py to have common utilities.
     - Rename, Make directory, Move, Upload, update
     - Made the directory selector sort properly
@@ -18,3 +16,6 @@ Revision history
     - Split permissions to file/directories vs objects
 	- Fix templates to look like the default admin.
     - Files to delete link to the live site.
+    - Fixed all url names to be "admin_file_manger_<aciton>" to make the
+	  possiblity of url clash smaller.
+    - Added permission checks to templates.

@@ -10,6 +10,7 @@ class File(models.Model):
             ("can_upload", "Can upload file"),
             ("can_delete", "Can delete file"),
             ("can_rename", "Can rename file"),
+            ("can_move", "Can move file"),
         )
 
 class Directory(models.Model):
@@ -19,5 +20,6 @@ class Directory(models.Model):
             ("can_copy", "Can copy directory"),
             ("can_delete", "Can delete directory"),
             ("can_rename", "Can rename directory"),
-            ("can_mkdir", "Can make directory"),
+            ("can_create", "Can make directory"),
+            ("can_move", "Can move directory"),
         )

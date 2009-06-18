@@ -12,6 +12,8 @@ class DirectoryPathField(forms.ChoiceField):
         Copied directly from FilePathField, alter to show only directories
         only, rather than files.
 
+        Also fixed the sorting.
+
         showroot=True -- Adds root directory to the options.
     """
     def __init__(self, path, showroot=False, match=None, 
@@ -59,7 +61,7 @@ class DirectoryForm(forms.Form):
 
     document_root = utils.get_document_root()
 
-    parent = DirectoryPathField(path=document_root,recursive=True,showroot=True)
+    parent = DirectoryPathField(path=document_root,recursive=True,showroot=True, help_text=_('Destination Directory'))
 
     def clean_parent(self):
         parent = self.cleaned_data['parent']

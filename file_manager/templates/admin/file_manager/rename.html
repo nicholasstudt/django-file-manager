@@ -8,7 +8,7 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 	<a href="../../">{% trans "Home" %}</a> &rsaquo;
-	<a href="{% url index %}">{% trans "File Manager" %}</a> &rsaquo;
+	<a href="{% url admin_file_manager_index %}">{% trans "File Manager" %}</a> &rsaquo;
 	{% trans 'Rename' %}
 </div>
 {% endblock %}
@@ -61,7 +61,13 @@
 
 <div class="submit-row">
     <input name="submit" type="submit" value="Save" class="default" />
-	<p class="deletelink-box"><a href="{% url delete url %}" class="deletelink">{% trans "Delete" %}</a></p>
+    {% if directory and perms.directory.can_delete %}
+	<p class="deletelink-box"><a href="{% url admin_file_manager_delete url %}" class="deletelink">{% trans "Delete" %}</a></p> 
+    {% endif %}
+    {% if not directory and perms.file.can_delete %}
+	<p class="deletelink-box"><a href="{% url admin_file_manager_delete url %}" class="deletelink">{% trans "Delete" %}</a></p>
+    {% endif %}
+
 </div>
 
 </form>

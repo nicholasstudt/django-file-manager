@@ -1,4 +1,14 @@
 To install run this command from the command prompt: 
 
 	python setup.py install
-	 
+
+* Add the File Manger to your Admin Index Page
+	1. Copy the default "admin/index.html" template to your local
+	template store. 
+
+	2. Edit the copied template to include immediately 
+	before {% for app in app_list %}
+
+	   {% include "admin/file_manager/app_list_include.html" %}
+	
+

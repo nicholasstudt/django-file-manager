@@ -8,6 +8,7 @@ from pwd import getpwuid
 from django import http, template
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response, redirect
+from django.utils.translation import ugettext as _
 
 from file_manager import forms
 from file_manager import utils
@@ -32,7 +33,7 @@ def create(request, url=None):
             file.write(form.cleaned_data['content'].replace('\r\n', '\n'))
             file.close()
 
-            return redirect('list', url=url)
+            return redirect('admin_file_manager_list', url=url)
     else:
         # Read the data from file
         form = forms.CreateForm(full_path, None) # An unbound form 
@@ -43,7 +44,6 @@ def create(request, url=None):
 
 @staff_member_required
 def copy(request, url=None):
-    # Copy a file/directory to a new location
     pass
 
 def index(request, url=None):
@@ -155,7 +155,7 @@ def mkdir(request, url=None):
             #Make the directory
             os.mkdir(os.path.join(full_path, form.cleaned_data['name']))
 
-            return redirect('list', url=url)
+            return redirect('admin_file_manager_list', url=url)
     else:
         form = forms.NameForm(full_path, None) # An unbound form 
 
@@ -186,7 +186,7 @@ def delete(request, url=None):
         else:
             os.remove(full_path)
 
-        return redirect('list', url=parent)
+        return redirect('admin_file_manager_list', url=parent)
 
     filelist = []
     errorlist = []
@@ -214,7 +214,8 @@ def delete(request, url=None):
     
     return render_to_response("admin/file_manager/delete.html", 
                               {'url': url, 'files': sorted(filelist),
-                               'errorlist':sorted(errorlist)},
+                               'errorlist':sorted(errorlist),
+                               'directory': '',},
                               context_instance=template.RequestContext(request))
 
 @staff_member_required
@@ -242,13 +243,14 @@ def move(request, url=None):
             #Rename the directory
             os.rename(full_path, new)
 
-            return redirect('list', url=parent)
+            return redirect('admin_file_manager_list', url=parent)
     else:
         form = forms.DirectoryForm(directory, full_path, initial={'parent':full_parent}) 
 
     return render_to_response("admin/file_manager/move.html", 
                               {'form': form, 'url': url,
-                               'current': "/%s" % parent,},
+                               'current': "/%s" % parent,
+                               'directory': os.path.isdir(full_path)},
                               context_instance=template.RequestContext(request))
 
 @staff_member_required
@@ -272,14 +274,15 @@ def rename(request, url=None):
             # Rename 
             os.rename(full_path, new)
 
-            return redirect('list', url=parent)
+            return redirect('admin_file_manager_list', url=parent)
     else:
         directory = url.replace(parent, "", 1).lstrip('/')
         data = {'name':directory}
         form = forms.NameForm(full_parent, full_path, initial=data)
 
     return render_to_response("admin/file_manager/rename.html", 
-                              {'form': form, 'url': url,},
+                              {'form': form, 'url': url, 
+                               'directory': os.path.isdir(full_path)},
                               context_instance=template.RequestContext(request))
 
 @staff_member_required
@@ -302,9 +305,16 @@ def update(request, url=None):
 
             # This makes it be \r\n be just \n
             file.write(form.cleaned_data['content'].replace('\r\n', '\n'))
-            file.close()
+            file.close() 
+            
+            if request.POST.has_key("_continue"):
+                msg = _('The %(name)s "%(obj)s" was updated successfully. %(rest)s') % {'name': 'file', 'obj': url, 'rest': _("You may edit it again below.") }
 
-            return redirect('list', url=parent)
+                return render_to_response("admin/file_manager/update.html", 
+                              {'form': form, 'url': url, 'messages': [msg]},
+                              context_instance=template.RequestContext(request))
+            
+            return redirect('admin_file_manager_list', url=parent)
     else:
         # Read the data from file
         content = open(full_path).read()
@@ -332,7 +342,7 @@ def upload(request, url=None):
             for chunk in form.cleaned_data['file'].chunks():
                 destination.write(chunk) 
 
-            return redirect('list', url=url)
+            return redirect('admin_file_manager_list', url=url)
     else:
         form = forms.UploadForm(path)
 
