@@ -232,6 +232,8 @@ def move(request, url=None):
     full_path = os.path.join(utils.get_document_root(), url)
     directory = url.replace(parent, "", 1).lstrip('/')
 
+    #setttings.TEMPPATH = fullpath
+
     if request.method == 'POST': 
         form = forms.DirectoryForm(directory, full_path, request.POST) 
 

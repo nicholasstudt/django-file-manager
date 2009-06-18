@@ -67,10 +67,12 @@ class DirectoryForm(forms.Form):
         parent = self.cleaned_data['parent']
 
         path = os.path.join(parent, self.file)
-        
+
         if self.original != path: # Let no change work correctly.
             if os.access(path, os.F_OK):
                 raise forms.ValidationError(_('Destination already exists.'))
+            if path.startswith(self.original):
+                raise forms.ValidationError(_('Can\'t move directory into itself.'))
 
         if not os.access(parent, os.W_OK):
             raise forms.ValidationError(_('Can not write to directory.'))

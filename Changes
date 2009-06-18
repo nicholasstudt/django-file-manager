@@ -4,6 +4,8 @@ Todo:
    - Ensure all failures 404 and don't toss errors.
    - Preserve the line ending when doing an update.(forces \n now)
    - Make grouped actions work for delete.
+   - Find a way to not show child directories of the current directory
+	 to move.
 
 Revision history
 
