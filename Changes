@@ -1,9 +1,9 @@
 
 Todo:
    - Add file/directory copy
+   - Ensure all failures 404 and don't toss errors.
    - Preserve the line ending when doing an update.(forces \n now)
    - Make grouped actions work for delete.
-   - Ensure all failures 404 and don't toss errors.
 
 Revision history
 
