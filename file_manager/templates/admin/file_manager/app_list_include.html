@@ -1,4 +1,6 @@
 {% load i18n %}
+
+{% if perms.file_manager %}
 <div class="module">
 	<table summary="{% trans "Models available in the File Manager application" %}">
 	<caption><a href="{% url admin_file_manager_index %}" class="section">{% trans "File Manager" %}</a></caption>
@@ -9,3 +11,4 @@
 	</tr>
 	</table>
 </div>
+{% endif %}

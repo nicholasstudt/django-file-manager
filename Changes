@@ -9,6 +9,11 @@ Todo:
 
 Revision history
 
+1.0.0-rc2 Thu Jun 18 12:47:08 CDT 2009:
+	- Fix password/logout links in the template.
+	- Ensure that directories can not be moved into themselves.
+	- Change documentation about correct placement of include
+
 1.0.0-rc1 Wed Jun 17 22:40:26 CDT 2009:
 	- Added utils.py to have common utilities.
     - Rename, Make directory, Move, Upload, update

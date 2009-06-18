@@ -10,5 +10,9 @@ To install run this command from the command prompt:
 	before {% for app in app_list %}
 
 	   {% include "admin/file_manager/app_list_include.html" %}
+
+	3. Change {% if app_list  %} to immediately before included line in
+	step 2.
+		{% if app_list or perms.file_manager %}
 	
 

@@ -1,25 +1,20 @@
 from django.db import models
 from django.contrib import admin
 
-class File(models.Model):
+class Items(models.Model):
     class Meta:
         permissions = (
-            ("can_create", "Can create file"),
-            ("can_update", "Can update file"),
-            ("can_copy", "Can copy file"),
-            ("can_upload", "Can upload file"),
-            ("can_delete", "Can delete file"),
-            ("can_rename", "Can rename file"),
-            ("can_move", "Can move file"),
-        )
+            ("can_create_file", "Can create file"),
+            ("can_update_file", "Can update file"),
+            ("can_copy_file", "Can copy file"),
+            ("can_upload_file", "Can upload file"),
+            ("can_delete_file", "Can delete file"),
+            ("can_rename_file", "Can rename file"),
+            ("can_move_file", "Can move file"),
 
-class Directory(models.Model):
-    class Meta:
-        verbose_name_plural = "Directories"
-        permissions = (
-            ("can_copy", "Can copy directory"),
-            ("can_delete", "Can delete directory"),
-            ("can_rename", "Can rename directory"),
-            ("can_create", "Can make directory"),
-            ("can_move", "Can move directory"),
+            ("can_copy_dir", "Can copy directory"),
+            ("can_delete_dir", "Can delete directory"),
+            ("can_rename_dir", "Can rename directory"),
+            ("can_create_dir", "Can make directory"),
+            ("can_move_dir", "Can move directory"),
         )

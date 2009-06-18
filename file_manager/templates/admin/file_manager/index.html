@@ -1,4 +1,4 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/file_manager/base.html" %}
 {% load i18n adminmedia %}
 
 {% block bodyclass %}change-list file_manager{% endblock %}
@@ -28,15 +28,15 @@
 		<ul class="object-tools">
 			{% if directory.can_write %}
 
-			{% if perms.directory.can_create %}
+			{% if perms.file_manager.can_create_dir %}
 			<li><a href="{% url admin_file_manager_mkdir directory.url %}" class="addlink">{% trans 'Create Directory' %}</a></li>
 			{% endif %}
 
-			{% if perms.file.can_create %}
+			{% if perms.file_manager.can_create_file %}
 			<li><a href="{% url admin_file_manager_create directory.url %}" class="addlink">{% trans 'Add File' %}</a></li>
 			{% endif %}
 
-			{% if perms.file.can_upload %}
+			{% if perms.file_manager.can_upload_file %}
 			<li><a href="{% url admin_file_manager_upload directory.url %}" class="addlink">{% trans 'Upload File' %}</a></li>
 			{% endif %}
 			
@@ -105,40 +105,40 @@
 		<td>{{ file.group }}</td>
 
 		<td>
-			{% if not file.directory and file.can_edit and perms.file.can_create %}
+			{% if not file.directory and file.can_edit and perms.file_manager.can_create_file %}
 			<a href="{% url admin_file_manager_update file.fileurl %}" class="changelink">Edit</a> 
 			{% endif %}
 		</td>
 
 		<td>
 			{% if directory.can_write %}
-				{% if file.directory and perms.directory.can_rename %}
+				{% if file.directory and perms.file_manager.can_rename_dir %}
 				<a href="{% url admin_file_manager_rename file.fileurl %}" class="changelink">Rename</a>
 				{% endif %}
 
-				{% if not file.directory and perms.file.can_rename %}
+				{% if not file.directory and perms.file_manager.can_rename_file %}
 				<a href="{% url admin_file_manager_rename file.fileurl %}" class="changelink">Rename</a>
 				{% endif %}
 			{% endif %}
 		</td>
 		<td>
 			{% if directory.can_write %}
-				{% if file.directory and perms.directory.can_move %}
+				{% if file.directory and perms.file_manager.can_move_dir %}
 				<a href="{% url admin_file_manager_move file.fileurl %}" class="changelink">Move</a>
 				{% endif %}
 
-				{% if not file.directory and perms.file.can_move %}
+				{% if not file.directory and perms.file_manager.can_move_file %}
 				<a href="{% url admin_file_manager_move file.fileurl %}" class="changelink">Move</a>
 				{% endif %}
 			{% endif %}
 		</td>
 		<td>
 			{% if directory.can_write %}
-				{% if file.directory and perms.directory.can_delete %}
+				{% if file.directory and perms.file_manager.can_delete_dir %}
 				<a href="{% url admin_file_manager_delete file.fileurl %}" class="deletelink">Delete</a>
 				{% endif %}
 				
-				{% if not file.directory and perms.file.can_delete %}
+				{% if not file.directory and perms.file_manager.can_delete_file %}
 				<a href="{% url admin_file_manager_delete file.fileurl %}" class="deletelink">Delete</a>
 				{% endif %}
 
@@ -146,11 +146,11 @@
 		</td>
 		<!--
 		<td>
-			{% if file.directory and perms.directory.can_copy %}
+			{% if file.directory and perms.file_manager.can_copy_dir %}
 			<a href="{% url admin_file_manager_copy file.fileurl %}">Copy</a> 
 			{% endif %}
 				
-			{% if not file.directory and perms.file.can_copy %}
+			{% if not file.directory and perms.file_manager.can_copy_file %}
 			<a href="{% url admin_file_manager_copy file.fileurl %}">Copy</a> 
 			{% endif %}
 		</td>

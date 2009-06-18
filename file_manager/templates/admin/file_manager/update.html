@@ -1,4 +1,4 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/file_manager/base.html" %}
 {% load i18n adminmedia %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
@@ -59,7 +59,7 @@
 
 <div class="submit-row">
     <input name="_save" type="submit" value="Save" class="default" />
-    {% if perms.file.can_delete %}<p class="deletelink-box"><a href="{% url admin_file_manager_delete url %}" class="deletelink">{% trans "Delete" %}</a></p>{% endif %}
+    {% if perms.file_manager.can_delete_file %}<p class="deletelink-box"><a href="{% url admin_file_manager_delete url %}" class="deletelink">{% trans "Delete" %}</a></p>{% endif %}
 	<input type="submit" value="{% trans 'Save and continue editing' %}" name="_continue" {{ onclick_attrib }}/>
 
 </div>

@@ -1,4 +1,4 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/file_manager/base.html" %}
 {% load i18n adminmedia %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
@@ -61,10 +61,10 @@
 
 <div class="submit-row">
     <input name="submit" type="submit" value="Save" class="default" />
-    {% if directory and perms.directory.can_delete %}
+    {% if directory and perms.file_manager.can_delete_dir %}
 	<p class="deletelink-box"><a href="{% url admin_file_manager_delete url %}" class="deletelink">{% trans "Delete" %}</a></p> 
     {% endif %}
-    {% if not directory and perms.file.can_delete %}
+    {% if not directory and perms.file_manager.can_delete_file %}
 	<p class="deletelink-box"><a href="{% url admin_file_manager_delete url %}" class="deletelink">{% trans "Delete" %}</a></p>
     {% endif %}
 
