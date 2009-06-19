@@ -78,7 +78,8 @@ class NameForm(forms.Form):
         return name 
 
 class ContentForm(forms.Form):
-    content = forms.CharField(widget=forms.widgets.Textarea())
+    attrs = { 'class': 'vLargeTextField' }
+    content = forms.CharField(widget=forms.widgets.Textarea(attrs=attrs))
 
 class CreateForm(NameForm,ContentForm):
     pass
