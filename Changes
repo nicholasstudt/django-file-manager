@@ -7,7 +7,7 @@ Todo:
 
 Revision history
 
-1.0.0-rc3
+1.0.0-rc3 Fri Jun 19 10:29:55 CDT 2009:
 	- Fixed Directory form not to show child directories of the current
 	  directory to move.
 
