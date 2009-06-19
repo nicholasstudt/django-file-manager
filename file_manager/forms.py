@@ -54,14 +54,23 @@ class DirectoryPathField(forms.ChoiceField):
 
 class DirectoryForm(forms.Form):
 
+    document_root = utils.get_document_root()
+
+    parent = DirectoryPathField(path=document_root,recursive=True,showroot=True, help_text=_('Destination Directory'))
+
     def __init__(self, file, original, *args, **kwargs):
         self.file = file 
         self.original = original 
         super(DirectoryForm, self).__init__(*args, **kwargs)
 
-    document_root = utils.get_document_root()
+        # flip through this and remove everything that matches original
+        # self.fields['parent'].choices 
+        filtered = []
+        for choice in self.fields['parent'].choices:
+            if not choice[0].startswith(self.original): 
+                filtered.append(choice)
 
-    parent = DirectoryPathField(path=document_root,recursive=True,showroot=True, help_text=_('Destination Directory'))
+        self.fields['parent'].choices = filtered
 
     def clean_parent(self):
         parent = self.cleaned_data['parent']

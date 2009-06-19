@@ -4,10 +4,12 @@ Todo:
    - Ensure all failures 404 and don't toss errors.
    - Preserve the line ending when doing an update.(forces \n now)
    - Make grouped actions work for delete.
-   - Find a way to not show child directories of the current directory
-	 to move.
 
 Revision history
+
+1.0.0-rc3
+	- Fixed Directory form not to show child directories of the current
+	  directory to move.
 
 1.0.0-rc2 Thu Jun 18 12:47:08 CDT 2009:
 	- Fix password/logout links in the template.
