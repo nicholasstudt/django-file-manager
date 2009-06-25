@@ -1,3 +1,4 @@
+import codecs
 import mimetypes
 import os
 
@@ -24,7 +25,7 @@ def create(request, url=None):
         form = forms.CreateForm(full_path, None, request.POST) 
 
         if form.is_valid(): 
-            file = open(os.path.join(full_path, form.cleaned_data['name']), 'w+')
+            file = codecs.open(os.path.join(full_path, form.cleaned_data['name']), encoding='utf-8', mode='w+')
 
             # FIXME: This shoule check the originals line ending and
             # preserve it.
@@ -300,7 +301,7 @@ def update(request, url=None):
         form = forms.ContentForm(request.POST) 
 
         if form.is_valid(): 
-            file = open(full_path, 'w+')
+            file = codecs.open(full_path, encoding='utf-8', mode='w+')
 
             # FIXME: This shoule check the originals line ending and
             # preserve it.

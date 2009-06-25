@@ -2,16 +2,16 @@
 Todo:
    - Add file/directory copy
 
-   - Ensure all failures 404 and don't toss errors.
    - Preserve the line ending when doing an update.(forces \n now)
    - Make grouped actions work for delete.
 
 Revision history
 
-1.0.0-rc4 Thu Jun 25 13:34:59 CDT 2009:
+1.0.0-rc4 Thu Jun 25 14:07:33 CDT 2009:
 	- Changed text field to vLargeTextField class, so it will be big by
 	  default.
 	- Added 404 failure for update fialing to open a file for update.
+	- Corrected handling of unicode file content.
 
 1.0.0-rc3 Fri Jun 19 10:29:55 CDT 2009:
 	- Fixed Directory form not to show child directories of the current
