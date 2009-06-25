@@ -321,7 +321,7 @@ def update(request, url=None):
         # Read the data from file
         try:
             content = open(full_path).read()
-        except OSError:
+        except (IOError, OSError):
             raise http.Http404
  
         data = {'content':content}
