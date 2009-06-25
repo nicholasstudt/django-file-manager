@@ -319,7 +319,11 @@ def update(request, url=None):
             return redirect('admin_file_manager_list', url=parent)
     else:
         # Read the data from file
-        content = open(full_path).read()
+        try:
+            content = open(full_path).read()
+        except OSError:
+            raise http.Http404
+ 
         data = {'content':content}
         form = forms.ContentForm(initial=data) # An unbound form 
 
