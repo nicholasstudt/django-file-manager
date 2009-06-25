@@ -1,5 +1,7 @@
+include AUTHORS 
 include Changes
 include INSTALL
+include LICENSE
 include MANIFEST.in
 include setup.py
 recursive-include file_manager/templates *
