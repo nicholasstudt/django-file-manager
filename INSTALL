@@ -16,3 +16,4 @@ To install run this command from the command prompt:
 		{% if app_list or perms.file_manager %}
 	
 
+ (r'^admin/file_manager', include('file_manager.urls')),
