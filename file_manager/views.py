@@ -14,7 +14,7 @@ from django.utils.translation import ugettext as _
 from file_manager import forms
 from file_manager import utils
 
-@staff_member_required
+#@staff_member_required
 def create(request, url=None):
     # Create a new text file.
     url = utils.clean_path(url)
@@ -42,11 +42,14 @@ def create(request, url=None):
     return render_to_response("admin/file_manager/create.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
+create = staff_member_required(create)
 
-@staff_member_required
+#@staff_member_required
 def copy(request, url=None):
     pass
+copy = staff_member_required(copy)
 
+#@staff_member_required
 def index(request, url=None):
     """
         Show list of files in a url
@@ -140,7 +143,7 @@ def index(request, url=None):
                               context_instance=template.RequestContext(request))
 index = staff_member_required(index)
 
-@staff_member_required
+#@staff_member_required
 def mkdir(request, url=None):
     """ 
         Make a new directory at the current url.
@@ -163,8 +166,9 @@ def mkdir(request, url=None):
     return render_to_response("admin/file_manager/mkdir.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
+mkdir = staff_member_required(mkdir)
 
-@staff_member_required
+#@staff_member_required
 def delete(request, url=None):
     # Delete a file/directory
     
@@ -214,12 +218,15 @@ def delete(request, url=None):
         filelist.append("/%s" % url)
     
     return render_to_response("admin/file_manager/delete.html", 
-                              {'url': url, 'files': sorted(filelist),
-                               'errorlist':sorted(errorlist),
+                             # {'url': url, 'files': sorted(filelist),
+                              {'url': url, 'files': filelist.sort(),
+                             #  'errorlist':sorted(errorlist),
+                               'errorlist':errorlist.sort(),
                                'directory': '',},
                               context_instance=template.RequestContext(request))
+delete = staff_member_required(delete)
 
-@staff_member_required
+#@staff_member_required
 def move(request, url=None):
     """
         Move file/directory to a new location.
@@ -255,8 +262,9 @@ def move(request, url=None):
                                'current': "/%s" % parent,
                                'directory': os.path.isdir(full_path)},
                               context_instance=template.RequestContext(request))
+move = staff_member_required(move)
 
-@staff_member_required
+#@staff_member_required
 def rename(request, url=None):
     """
         Rename
@@ -287,8 +295,9 @@ def rename(request, url=None):
                               {'form': form, 'url': url, 
                                'directory': os.path.isdir(full_path)},
                               context_instance=template.RequestContext(request))
+rename = staff_member_required(rename)
 
-@staff_member_required
+#@staff_member_required
 def update(request, url=None):
     """
         Update
@@ -331,8 +340,9 @@ def update(request, url=None):
     return render_to_response("admin/file_manager/update.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
+update = staff_member_required(update)
 
-@staff_member_required
+#@staff_member_required
 def upload(request, url=None):
     """
         Upload a new file.
@@ -356,3 +366,4 @@ def upload(request, url=None):
     return render_to_response("admin/file_manager/upload.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
+upload = staff_member_required(upload)
