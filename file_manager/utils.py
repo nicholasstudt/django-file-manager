@@ -5,12 +5,20 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 def get_max_upload_size():
+    """
+    Pull the FILE_UPLOAD_MAX_SIZE from settings.
+    """
     if not settings.FILE_UPLOAD_MAX_SIZE:
         raise ImproperlyConfigured, 'file_manager requires FILE_UPLOAD_MAX_SIZE variable be defined in settings.py' 
 
     return settings.FILE_UPLOAD_MAX_SIZE
 
 def get_document_root():
+    """
+    Pull the DOCUMENT_ROOT variable from settings. This variable is
+    specific to this application.
+    """
+
     if not settings.DOCUMENT_ROOT:
         raise ImproperlyConfigured, 'file_manager requires DOCUMENT_ROOT variable be defined in settings.py' 
 

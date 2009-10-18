@@ -7,6 +7,10 @@ from django.utils.translation import ugettext as _
 
 from file_manager import utils
 
+class FileForm(forms.Form):
+
+    file = forms.FilePathField(path=utils.get_document_root(),recursive=True)
+
 class DirectoryForm(forms.Form):
 
     parent = forms.ChoiceField(help_text=_('Destination Directory'))
@@ -39,7 +43,8 @@ class DirectoryForm(forms.Form):
                     d_short = d.replace(self.document_root, "", 1)
                     choices.append((d, d_short))
 
-        return sorted(choices)       
+        #return sorted(choices)      
+        return choices.sort()
 
     def clean_parent(self):
         parent = self.cleaned_data['parent']
@@ -82,6 +87,9 @@ class ContentForm(forms.Form):
     content = forms.CharField(widget=forms.widgets.Textarea(attrs=attrs))
 
 class CreateForm(NameForm,ContentForm):
+    pass
+
+class CreateLinkForm(NameForm, FileForm):
     pass
 
 class UploadForm(forms.Form):

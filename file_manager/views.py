@@ -16,6 +16,9 @@ from file_manager import utils
 
 #@staff_member_required
 def create(request, url=None):
+    """
+    Create a new text file at the url.
+    """
     # Create a new text file.
     url = utils.clean_path(url)
     parent = '/'.join(url.split('/')[:-1])
@@ -52,7 +55,7 @@ copy = staff_member_required(copy)
 #@staff_member_required
 def index(request, url=None):
     """
-        Show list of files in a url
+        Show list of files in a url inside of the document root.
     """
  
     perms = [ '---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx' ]
@@ -144,6 +147,32 @@ def index(request, url=None):
 index = staff_member_required(index)
 
 #@staff_member_required
+def mkln(request, url=None):
+    """ 
+        Make a new link at the current url.
+    """
+
+    url = utils.clean_path(url)
+    full_path = os.path.join(utils.get_document_root(), url)
+
+    if request.method == 'POST': 
+        form = forms.CreateLinkForm(request.POST) 
+
+        if form.is_valid(): 
+            os.symlink('source', 'destination')
+            #Make the directory
+            #os.mkdir(os.path.join(full_path, form.cleaned_data['name']))
+
+            return redirect('admin_file_manager_list', url=url)
+    else:
+        form = forms.CreateLinkForm() # An unbound form 
+
+    return render_to_response("admin/file_manager/mkln.html", 
+                              {'form': form, 'url': url,},
+                              context_instance=template.RequestContext(request))
+mkln = staff_member_required(mkln)
+
+#@staff_member_required
 def mkdir(request, url=None):
     """ 
         Make a new directory at the current url.
@@ -221,7 +250,7 @@ def delete(request, url=None):
                              # {'url': url, 'files': sorted(filelist),
                               {'url': url, 'files': filelist.sort(),
                              #  'errorlist':sorted(errorlist),
-                               'errorlist':errorlist.sort(),
+                               'errorlist': errorlist.sort(),
                                'directory': '',},
                               context_instance=template.RequestContext(request))
 delete = staff_member_required(delete)

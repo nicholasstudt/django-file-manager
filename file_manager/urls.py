@@ -25,6 +25,10 @@ urlpatterns = patterns('',
     url(r'^/upload/(?P<url>.*)$', 'file_manager.views.upload', 
         name='admin_file_manager_upload'),
 
+    # Link Options
+    url(r'^/mkln/(?P<url>.*)$', 'file_manager.views.mkln', 
+        name='admin_file_manager_mkln'),
+
     # Directory Options.
     url(r'^/mkdir/(?P<url>.*)$', 'file_manager.views.mkdir', 
         name='admin_file_manager_mkdir'),
