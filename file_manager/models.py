@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib import admin
+#from django.contrib import admin
 
 class Items(models.Model):
     class Meta:
@@ -11,6 +11,12 @@ class Items(models.Model):
             ("can_delete_file", "Can delete file"),
             ("can_rename_file", "Can rename file"),
             ("can_move_file", "Can move file"),
+
+            ('can_create_symlink', 'Can create symlink'),
+            ('can_copy_symlink', 'Can copy symlink'),
+            ('can_move_symlink', 'Can move symlink'),
+            ('can_rename_symlink', 'Can rename symlink'),
+            ('can_delete_symlink', 'Can delete symlink'),
 
             ("can_copy_dir", "Can copy directory"),
             ("can_delete_dir", "Can delete directory"),

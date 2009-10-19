@@ -1,8 +1,8 @@
 import os 
 
-from django.conf import settings
+#from django.conf import settings
 from django import forms
-from django.core import exceptions
+#from django.core import exceptions
 from django.utils.translation import ugettext as _
 
 from file_manager import utils

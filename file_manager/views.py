@@ -99,8 +99,9 @@ def index(request, url=None):
         # size (in bytes ) for use with |filesizeformat
         item['size'] = itemstat.st_size
         
-        # type (direcory/file)
+        # type (direcory/file/link)
         item['directory'] = os.path.isdir(os.path.join(full_path, file))
+        item['link'] = os.path.islink(os.path.join(full_path, file))
 
         # ctime, mtime
         item['ctime'] = datetime.fromtimestamp(itemstat.st_ctime)
@@ -141,8 +142,7 @@ def index(request, url=None):
         files.append(item)
     
     return render_to_response("admin/file_manager/index.html", 
-                              {'directory': directory,
-                               'files': files,},
+                              {'directory': directory, 'files': files,},
                               context_instance=template.RequestContext(request))
 index = staff_member_required(index)
 
@@ -159,7 +159,8 @@ def mkln(request, url=None):
         form = forms.CreateLinkForm(request.POST) 
 
         if form.is_valid(): 
-            os.symlink('source', 'destination')
+            pass
+            #os.symlink('source', 'destination')
             #Make the directory
             #os.mkdir(os.path.join(full_path, form.cleaned_data['name']))
 
@@ -184,8 +185,7 @@ def mkdir(request, url=None):
     if request.method == 'POST': 
         form = forms.NameForm(full_path, None, request.POST) 
 
-        if form.is_valid(): 
-            #Make the directory
+        if form.is_valid(): #Make the directory
             os.mkdir(os.path.join(full_path, form.cleaned_data['name']))
 
             return redirect('admin_file_manager_list', url=url)
@@ -275,8 +275,6 @@ def move(request, url=None):
         form = forms.DirectoryForm(directory, full_path, request.POST) 
 
         if form.is_valid(): 
-    
-
             new = os.path.join(form.cleaned_data['parent'], directory)
 
             #Rename the directory

@@ -26,7 +26,8 @@ def get_document_root():
 
 def clean_path(url):
     """
-    Makes the path safe from ..
+    Makes the path safe from '.', '..', and multiple slashes. Ensure all
+    slashes point the right direction '/'.
     """
     if not url:
         return '' 
