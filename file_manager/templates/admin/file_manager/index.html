@@ -32,6 +32,10 @@
 			<li><a href="{% url admin_file_manager_mkdir directory.url %}" class="addlink">{% trans 'Create Directory' %}</a></li>
 			{% endif %}
 
+			{% if perms.file_manager.can_create_link %}
+			<li><a href="{% url admin_file_manager_mkln directory.url %}" class="addlink">{% trans 'Create Link' %}</a></li>
+			{% endif %}
+
 			{% if perms.file_manager.can_create_file %}
 			<li><a href="{% url admin_file_manager_create directory.url %}" class="addlink">{% trans 'Add File' %}</a></li>
 			{% endif %}

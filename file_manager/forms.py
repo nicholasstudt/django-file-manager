@@ -44,7 +44,8 @@ class DirectoryForm(forms.Form):
                     choices.append((d, d_short))
 
         #return sorted(choices)      
-        return choices.sort()
+        choices.sort()
+        return choices
 
     def clean_parent(self):
         parent = self.cleaned_data['parent']
@@ -89,7 +90,8 @@ class ContentForm(forms.Form):
 class CreateForm(NameForm,ContentForm):
     pass
 
-class CreateLinkForm(NameForm, FileForm):
+class CreateLinkForm(NameForm,FileForm):
+    # FileForm only shows files, DirectoryFrom only shows directories.
     pass
 
 class UploadForm(forms.Form):

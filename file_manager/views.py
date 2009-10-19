@@ -156,7 +156,7 @@ def mkln(request, url=None):
     full_path = os.path.join(utils.get_document_root(), url)
 
     if request.method == 'POST': 
-        form = forms.CreateLinkForm(request.POST) 
+        form = forms.CreateLinkForm(full_path, None, request.POST) 
 
         if form.is_valid(): 
             pass
@@ -166,7 +166,7 @@ def mkln(request, url=None):
 
             return redirect('admin_file_manager_list', url=url)
     else:
-        form = forms.CreateLinkForm() # An unbound form 
+        form = forms.CreateLinkForm(full_path, None)  # An unbound form 
 
     return render_to_response("admin/file_manager/mkln.html", 
                               {'form': form, 'url': url,},
