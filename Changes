@@ -3,6 +3,7 @@ Revision history
 1.1
     - Python 2.3 fixes. [sorted(list) to list.sort()] 
 	- Add the ability to add symbolic links. (Unix Only)
+	- Adjust templates and index template to handle symbolic links. 
 
 1.0.3 Thu Jun 25 14:07:33 CDT 2009:
 	- Changed text field to vLargeTextField class, so it will be big by

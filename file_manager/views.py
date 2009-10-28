@@ -88,24 +88,33 @@ def index(request, url=None):
         directory['can_write'] = False
 
     for file in listing:
-        itemstat = os.stat(os.path.join(full_path, file))
-
         item = {}
+        
         item['filename'] = file
         item['fileurl'] = os.path.join(url, file)
-        item['user'] = getpwuid(itemstat.st_uid)[0]
-        item['group'] = getgrgid(itemstat.st_gid)[0]
 
-        # size (in bytes ) for use with |filesizeformat
-        item['size'] = itemstat.st_size
-        
         # type (direcory/file/link)
         item['directory'] = os.path.isdir(os.path.join(full_path, file))
         item['link'] = os.path.islink(os.path.join(full_path, file))
 
-        # ctime, mtime
-        item['ctime'] = datetime.fromtimestamp(itemstat.st_ctime)
-        item['mtime'] = datetime.fromtimestamp(itemstat.st_mtime)
+        # Catch broken links.
+        try: 
+            itemstat = os.stat(os.path.join(full_path, file))
+            item['user'] = getpwuid(itemstat.st_uid)[0]
+            item['group'] = getgrgid(itemstat.st_gid)[0]
+
+            # size (in bytes ) for use with |filesizeformat
+            item['size'] = itemstat.st_size
+
+            # ctime, mtime
+            item['ctime'] = datetime.fromtimestamp(itemstat.st_ctime)
+            item['mtime'] = datetime.fromtimestamp(itemstat.st_mtime)
+        except:
+            # Blank out because of broken link.
+            item['user'] = item['group'] = ''
+            item['size'] = item['ctime'] = item['mtime'] = None
+            item['broken_link'] = True
+
 
         mime = mimetypes.guess_type(os.path.join(full_path, file),False)[0]
   
@@ -156,17 +165,18 @@ def mkln(request, url=None):
     full_path = os.path.join(utils.get_document_root(), url)
 
     if request.method == 'POST': 
-        form = forms.CreateLinkForm(full_path, None, request.POST) 
+        form = forms.CreateLinkForm(full_path, None, full_path, request.POST) 
 
         if form.is_valid(): 
-            pass
-            #os.symlink('source', 'destination')
-            #Make the directory
-            #os.mkdir(os.path.join(full_path, form.cleaned_data['name']))
+            src = os.path.join(full_path, form.cleaned_data['link'])
+            dest = os.path.join(full_path, form.cleaned_data['name'])
+            relative = os.path.relpath(src, full_path)
 
+            os.symlink(relative, dest)
+            
             return redirect('admin_file_manager_list', url=url)
     else:
-        form = forms.CreateLinkForm(full_path, None)  # An unbound form 
+        form = forms.CreateLinkForm(full_path, None, full_path)  # An unbound form 
 
     return render_to_response("admin/file_manager/mkln.html", 
                               {'form': form, 'url': url,},
@@ -209,7 +219,7 @@ def delete(request, url=None):
     if request.method == 'POST': 
         
         # If this is a directory, do the walk
-        if os.path.isdir(full_path):
+        if os.path.isdir(full_path) and not os.path.islink(full_path):
             for root, dirs, files in os.walk(full_path, topdown=False):
                 for name in files:
                     os.remove(os.path.join(root, name))
@@ -226,7 +236,7 @@ def delete(request, url=None):
     errorlist = []
 
     # If this is a directory, generate the list of files to be removed.
-    if os.path.isdir(full_path):
+    if os.path.isdir(full_path) and not os.path.islink(full_path):
         filelist.append("/%s" % url)
         for root, dirs, files, in os.walk(full_path):
             for name in files: 
@@ -269,16 +279,25 @@ def move(request, url=None):
     full_path = os.path.join(utils.get_document_root(), url)
     directory = url.replace(parent, "", 1).lstrip('/')
 
-    #setttings.TEMPPATH = fullpath
-
     if request.method == 'POST': 
         form = forms.DirectoryForm(directory, full_path, request.POST) 
 
         if form.is_valid(): 
             new = os.path.join(form.cleaned_data['parent'], directory)
 
-            #Rename the directory
-            os.rename(full_path, new)
+            if os.path.islink(full_path):
+
+                src = os.readlink(full_path)
+                if not os.path.isabs(src):
+                    src = os.path.join(os.path.dirname(full_path), src)
+
+                relative = os.path.relpath(src, form.cleaned_data['parent'])
+
+                os.remove(full_path) # Remove original link.
+                os.symlink(relative, new) # Create new link.
+
+            else:
+                os.rename(full_path, new) #Rename the directory
 
             return redirect('admin_file_manager_list', url=parent)
     else:

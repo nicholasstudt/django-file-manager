@@ -7,9 +7,63 @@ from django.utils.translation import ugettext as _
 
 from file_manager import utils
 
-class FileForm(forms.Form):
+class DirectoryFileForm(forms.Form):
 
-    file = forms.FilePathField(path=utils.get_document_root(),recursive=True)
+    link = forms.ChoiceField(help_text=_('Link Destination'))
+
+    def __init__(self, file, *args, **kwargs):
+        self.file = file 
+        #self.original = original 
+        self.document_root = utils.get_document_root()
+        super(DirectoryFileForm, self).__init__(*args, **kwargs)
+    
+        # Set the choices dynamicly.
+        self.fields['link'].choices = self.make_choices()
+
+    def make_choices(self):
+ 
+        choices = []
+
+        # Make "/" valid"
+        d = self.document_root
+        d_short = d.replace(self.document_root, "", 1)
+        if not d_short:
+            d_short = '/'
+        
+        choices.append((d, d_short))
+
+        for root, dirs, files in os.walk(self.document_root):
+            for d in dirs:
+                d = os.path.join(root, d)
+                d_short = d.replace(self.document_root, "", 1)
+                choices.append((d, d_short))
+            for f in files:
+                f = os.path.join(root, f)
+                f_short = f.replace(self.document_root, "", 1)
+                choices.append((f, f_short))
+
+
+        #return sorted(choices)      
+        choices.sort()
+        return choices
+
+    def clean_parent(self):
+        parent = self.cleaned_data['parent']
+
+        path = os.path.join(parent, self.file)
+
+        if self.original != path: # Let no change work correctly.
+            if os.access(path, os.F_OK):
+                raise forms.ValidationError(_('Destination already exists.'))
+            if path.startswith(self.original):
+                raise forms.ValidationError(_('Can\'t move directory into itself.'))
+
+        if not os.access(parent, os.W_OK):
+            raise forms.ValidationError(_('Can not write to directory.'))
+
+        return parent
+
+
 
 class DirectoryForm(forms.Form):
 
@@ -90,7 +144,7 @@ class ContentForm(forms.Form):
 class CreateForm(NameForm,ContentForm):
     pass
 
-class CreateLinkForm(NameForm,FileForm):
+class CreateLinkForm(NameForm,DirectoryFileForm):
     # FileForm only shows files, DirectoryFrom only shows directories.
     pass
 
