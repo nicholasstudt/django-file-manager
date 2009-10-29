@@ -1,8 +1,6 @@
 import os 
 
-#from django.conf import settings
 from django import forms
-#from django.core import exceptions
 from django.utils.translation import ugettext as _
 
 from file_manager import utils
@@ -13,7 +11,6 @@ class DirectoryFileForm(forms.Form):
 
     def __init__(self, file, *args, **kwargs):
         self.file = file 
-        #self.original = original 
         self.document_root = utils.get_document_root()
         super(DirectoryFileForm, self).__init__(*args, **kwargs)
     
@@ -144,8 +141,21 @@ class ContentForm(forms.Form):
 class CreateForm(NameForm,ContentForm):
     pass
 
+class CopyForm(NameForm,DirectoryForm):
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        name = self.cleaned_data.get('name')
+        parent = self.cleaned_data.get('parent')
+        
+        path = os.path.join(parent, name)
+
+        if os.access(path, os.F_OK):
+            raise forms.ValidationError(_('File name already exists.'))
+
+        return cleaned_data
+
 class CreateLinkForm(NameForm,DirectoryFileForm):
-    # FileForm only shows files, DirectoryFrom only shows directories.
     pass
 
 class UploadForm(forms.Form):

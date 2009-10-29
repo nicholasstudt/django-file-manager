@@ -1,34 +1,35 @@
 Revision history
 
 1.1
-    - Python 2.3 fixes. [sorted(list) to list.sort()] 
-	- Add the ability to add symbolic links. (Unix Only)
-	- Adjust templates and index template to handle symbolic links. 
+  - Python 2.3 fixes. [sorted(list) to list.sort()] 
+  - Add the ability to add symbolic links. (Unix Only)
+  - Adjust templates and index template to handle symbolic links. 
+  - Add the ability to copy files and directories.
 
 1.0.3 Thu Jun 25 14:07:33 CDT 2009:
-	- Changed text field to vLargeTextField class, so it will be big by
-	  default.
-	- Added 404 failure for update fialing to open a file for update.
-	- Corrected handling of unicode file content.
+  - Changed text field to vLargeTextField class, so it will be big by
+    default.
+  - Added 404 failure for update fialing to open a file for update.
+  - Corrected handling of unicode file content.
 
 1.0.2 Fri Jun 19 10:29:55 CDT 2009:
-	- Fixed Directory form not to show child directories of the current
-	  directory to move.
+  - Fixed Directory form not to show child directories of the current
+    directory to move.
 
 1.0.1 Thu Jun 18 12:47:08 CDT 2009:
-	- Fix password/logout links in the template.
-	- Ensure that directories can not be moved into themselves.
-	- Change documentation about correct placement of include
+  - Fix password/logout links in the template.
+  - Ensure that directories can not be moved into themselves.
+  - Change documentation about correct placement of include
 
 1.0 Wed Jun 17 22:40:26 CDT 2009:
-	- Added utils.py to have common utilities.
-    - Rename, Make directory, Move, Upload, update
-    - Made the directory selector sort properly
-    - Delete works. 
-    - Create new file works. 
-    - Split permissions to file/directories vs objects
-	- Fix templates to look like the default admin.
-    - Files to delete link to the live site.
-    - Fixed all url names to be "admin_file_manger_<aciton>" to make the
-	  possiblity of url clash smaller.
-    - Added permission checks to templates.
+  - Added utils.py to have common utilities.
+  - Rename, Make directory, Move, Upload, update
+  - Made the directory selector sort properly
+  - Delete works. 
+  - Create new file works. 
+  - Split permissions to file/directories vs objects
+  - Fix templates to look like the default admin.
+  - Files to delete link to the live site.
+  - Fixed all url names to be "admin_file_manger_<aciton>" to make the
+    possiblity of url clash smaller.
+  - Added permission checks to templates.

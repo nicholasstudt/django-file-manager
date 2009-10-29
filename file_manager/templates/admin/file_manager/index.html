@@ -130,6 +130,17 @@
 		</td>
 		<td>
 			{% if directory.can_write %}
+				{% if file.directory and perms.file_manager.can_copy_dir %}
+				<a href="{% url admin_file_manager_copy file.fileurl %}" class="changelink">Copy</a>
+				{% endif %}
+
+				{% if not file.directory and perms.file_manager.can_copy_file %}
+				<a href="{% url admin_file_manager_copy file.fileurl %}" class="changelink">Copy</a>
+				{% endif %}
+			{% endif %}
+        </td>
+		<td>
+			{% if directory.can_write %}
 				{% if file.directory and perms.file_manager.can_move_dir %}
 				<a href="{% url admin_file_manager_move file.fileurl %}" class="changelink">Move</a>
 				{% endif %}

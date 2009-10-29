@@ -1,6 +1,7 @@
 import codecs
 import mimetypes
 import os
+import shutil
 
 from datetime import datetime
 from grp import getgrgid
@@ -49,7 +50,38 @@ create = staff_member_required(create)
 
 #@staff_member_required
 def copy(request, url=None):
-    pass
+    """
+        Copy file/directory to a new location.
+    """
+
+    # Not really happy about the l/rstrips.
+    url = utils.clean_path(url)
+
+    parent = '/'.join(url.split('/')[:-1])
+    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
+    full_path = os.path.join(utils.get_document_root(), url)
+    directory = url.replace(parent, "", 1).lstrip('/')
+
+    if request.method == 'POST': 
+        form = forms.CopyForm(full_path, '', directory, full_path, request.POST) 
+        if form.is_valid(): 
+            new_path = os.path.join(form.cleaned_data['parent'],
+                                    form.cleaned_data['name'])
+            
+            if os.path.isdir(full_path):
+                shutil.copytree(full_path, new_path)
+            else:
+                shutil.copy(full_path, new_path)
+
+            return redirect('admin_file_manager_list', url=parent)
+    else:
+        form = forms.CopyForm(full_path, '', directory, full_path, initial={'parent':full_parent, 'name': directory}) 
+
+    return render_to_response("admin/file_manager/copy.html", 
+                              {'form': form, 'url': url,
+                               'current': "/%s" % parent,
+                               'directory': os.path.isdir(full_path)},
+                              context_instance=template.RequestContext(request))
 copy = staff_member_required(copy)
 
 #@staff_member_required
@@ -255,12 +287,16 @@ def delete(request, url=None):
             errorlist.append("/%s" % url)
 
         filelist.append("/%s" % url)
+
+    # Because python 2.3 is ... painful.
+    filelist.sort()
+    errorlist.sort()
     
     return render_to_response("admin/file_manager/delete.html", 
                              # {'url': url, 'files': sorted(filelist),
-                              {'url': url, 'files': filelist.sort(),
                              #  'errorlist':sorted(errorlist),
-                               'errorlist': errorlist.sort(),
+                              {'url': url, 'files': filelist,
+                               'errorlist': errorlist,
                                'directory': '',},
                               context_instance=template.RequestContext(request))
 delete = staff_member_required(delete)
