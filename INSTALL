@@ -13,7 +13,9 @@ To install run this command from the command prompt:
 
 	3. Change {% if app_list  %} to immediately before included line in
 	step 2.
-		{% if app_list or perms.file_manager %}
-	
 
- (r'^admin/file_manager', include('file_manager.urls')),
+		{% if app_list or perms.file_manager %}
+
+	4. Add the file manager to your projects urls.py
+
+	    (r'^admin/file_manager', include('file_manager.urls')),
