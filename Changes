@@ -5,6 +5,7 @@ Revision history
   - Add the ability to add symbolic links. (Unix Only)
   - Adjust templates and index template to handle symbolic links. 
   - Add the ability to copy files and directories.
+  - Editing now preserves original file line endings.
 
 1.0.3 Thu Jun 25 14:07:33 CDT 2009:
   - Changed text field to vLargeTextField class, so it will be big by

@@ -98,6 +98,7 @@
 			<a href="{% if file.directory %}{% url admin_file_manager_list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
             {% if file.link %}
                 [{% if file.broken_link %}Broken {% endif %}Link]
+                /{{ file.link_src }}
             {% endif %}
 		</td>
 		<td>

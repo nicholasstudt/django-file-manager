@@ -30,11 +30,7 @@ def create(request, url=None):
 
         if form.is_valid(): 
             file = codecs.open(os.path.join(full_path, form.cleaned_data['name']), encoding='utf-8', mode='w+')
-
-            # FIXME: This shoule check the originals line ending and
-            # preserve it.
-
-            # This makes it be \r\n be just \n
+            
             file.write(form.cleaned_data['content'].replace('\r\n', '\n'))
             file.close()
 
@@ -90,21 +86,18 @@ def index(request, url=None):
         Show list of files in a url inside of the document root.
     """
  
+    # Stuff the files in here.
+    files = []
+    directory = {}
     perms = [ '---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx' ]
 
     url = utils.clean_path(url)
-
-    # Stuff the files in here.
-    files = []
-
     full_path = os.path.join(utils.get_document_root(), url)
 
     try:
         listing = os.listdir(full_path)
     except OSError:
         raise http.Http404
-  
-    directory = {}
 
     directory['url'] = url
     directory['parent'] = '/'.join(url.split('/')[:-1])
@@ -123,15 +116,19 @@ def index(request, url=None):
         item = {}
         
         item['filename'] = file
+        item['filepath'] = os.path.join(full_path, file)
         item['fileurl'] = os.path.join(url, file)
 
         # type (direcory/file/link)
-        item['directory'] = os.path.isdir(os.path.join(full_path, file))
-        item['link'] = os.path.islink(os.path.join(full_path, file))
+        item['directory'] = os.path.isdir(item['filepath'])
+        item['link'] = os.path.islink(item['filepath'])
+
+        if item['link']:
+            item['link_src'] = os.path.normpath(os.path.join(url, os.readlink(item['filepath'])))
 
         # Catch broken links.
         try: 
-            itemstat = os.stat(os.path.join(full_path, file))
+            itemstat = os.stat(item['filepath'])
             item['user'] = getpwuid(itemstat.st_uid)[0]
             item['group'] = getgrgid(itemstat.st_gid)[0]
 
@@ -148,7 +145,7 @@ def index(request, url=None):
             item['broken_link'] = True
 
 
-        mime = mimetypes.guess_type(os.path.join(full_path, file),False)[0]
+        mime = mimetypes.guess_type(item['filepath'], False)[0]
   
         # Assume we can't edit anything except text and unknown.
         if not mime:
@@ -170,12 +167,12 @@ def index(request, url=None):
         item['perms'] = "%s%s%s%s" % (dperms, perms[int(octs[1])], 
                                       perms[int(octs[2])], perms[int(octs[3])])
      
-        if os.access(os.path.join(full_path, file), os.R_OK):
+        if os.access(item['filepath'], os.R_OK):
             item['can_read'] = True
         else:
             item['can_read'] = False
 
-        if os.access(os.path.join(full_path, file), os.W_OK):
+        if os.access(item['filepath'], os.W_OK):
             item['can_write'] = True
         else:
             item['can_write'] = False
@@ -208,7 +205,7 @@ def mkln(request, url=None):
             
             return redirect('admin_file_manager_list', url=url)
     else:
-        form = forms.CreateLinkForm(full_path, None, full_path)  # An unbound form 
+        form = forms.CreateLinkForm(full_path, None, full_path)
 
     return render_to_response("admin/file_manager/mkln.html", 
                               {'form': form, 'url': url,},
@@ -241,7 +238,9 @@ mkdir = staff_member_required(mkdir)
 
 #@staff_member_required
 def delete(request, url=None):
-    # Delete a file/directory
+    """
+    Delete a file/directory
+    """
     
     url = utils.clean_path(url)
     parent = '/'.join(url.split('/')[:-1])
@@ -392,13 +391,21 @@ def update(request, url=None):
         form = forms.ContentForm(request.POST) 
 
         if form.is_valid(): 
+
+            try:
+                original = open(full_path, 'U')
+                content = original.read() # To get newlines populated.
+                
+            except (IOError, OSError):
+                raise http.Http404
+ 
             file = codecs.open(full_path, encoding='utf-8', mode='w+')
 
-            # FIXME: This shoule check the originals line ending and
-            # preserve it.
+            if '\r\n' in original.newlines:
+                file.write(form.cleaned_data['content'])
+            else:
+                file.write(form.cleaned_data['content'].replace('\r\n', '\n'))
 
-            # This makes it be \r\n be just \n
-            file.write(form.cleaned_data['content'].replace('\r\n', '\n'))
             file.close() 
             
             if request.POST.has_key("_continue"):
