@@ -20,7 +20,6 @@
 {% block content %}
 
 <div id="content-main">
-	
 
 	<h1>Directory: '/{{ directory.url }}'</h1>
 
@@ -49,13 +48,14 @@
     {% endblock %}
   
 	<div class="module" id="changelist">
+	<form action="" method="post">
+
 	<div class="actions">
 	<!--
-	<form action="" method="post">
 		<label>Action: 
 		<select name="action"> 
 			<option value="" selected="selected">---------</option>
-			<option value="delete_selected">Delete selected tags</option>
+			<option value="delete_selected">Delete selected items</option>
 		</select>
 		</label>
 	<button type="submit" class="button" title="Run the selected action" name="index" value="0">Go</button>
@@ -71,7 +71,7 @@
 <table cellspacing="0">
 	<thead>
 	<tr>
-		<th></th>
+		<th> </th>
 		<th>Name</th>
 		<th>Size</th>
 		<th>Permissions</th>
@@ -79,7 +79,7 @@
 		<th>Modified</th>
 		<th>User</th>
 		<th>Group</th>
-		<th colspan="4">Actions</th>
+		<th colspan="5">Actions</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -92,13 +92,14 @@
 	<tr class="{% cycle 'row1' 'row2' %}">
 		<td>
 			{% if file.directory %}<span class="folder">D</span>{% endif %}	
-            
 		</td>
 		<td>
 			<a href="{% if file.directory %}{% url admin_file_manager_list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
             {% if file.link %}
+				<span class="{% if file.broken_link %}broken_{% endif %}link">
                 [{% if file.broken_link %}Broken {% endif %}Link]
                 /{{ file.link_src }}
+				</span>
             {% endif %}
 		</td>
 		<td>
@@ -163,17 +164,6 @@
 
 			{% endif %}
 		</td>
-		<!--
-		<td>
-			{% if file.directory and perms.file_manager.can_copy_dir %}
-			<a href="{% url admin_file_manager_copy file.fileurl %}">Copy</a> 
-			{% endif %}
-				
-			{% if not file.directory and perms.file_manager.can_copy_file %}
-			<a href="{% url admin_file_manager_copy file.fileurl %}">Copy</a> 
-			{% endif %}
-		</td>
-		-->
 	</tr>
 {% endfor %}
 
@@ -185,6 +175,7 @@
 	{{ files|length }} file{{ files|pluralize }}
 </p>
 
-
 </div>
+
+</form>
 {% endblock %}
