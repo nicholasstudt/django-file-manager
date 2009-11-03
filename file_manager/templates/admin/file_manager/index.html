@@ -91,14 +91,19 @@
 {% for file in dfile.list|dictsort:"filename" %}
 	<tr class="{% cycle 'row1' 'row2' %}">
 		<td>
-			{% if file.directory %}<span class="folder">D</span>{% endif %}	
+			&nbsp;
 		</td>
 		<td>
+			{% if file.directory %}
+				<span class="folder">Folder</span>
+			{% else %}
+				<span class="file">File</span>
+			{% endif %}	
 			<a href="{% if file.directory %}{% url admin_file_manager_list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
             {% if file.link %}
 				<span class="{% if file.broken_link %}broken_{% endif %}link">
                 [{% if file.broken_link %}Broken {% endif %}Link]
-                /{{ file.link_src }}
+					<span class="link_destination">/{{ file.link_src }}</span>
 				</span>
             {% endif %}
 		</td>
