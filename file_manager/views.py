@@ -85,7 +85,13 @@ def index(request, url=None):
     """
         Show list of files in a url inside of the document root.
     """
- 
+
+    if request.method == 'POST': 
+        if request.POST.get('action') == 'delete_selected':
+            response = delete_selected(request, url)
+            if response:
+                return response
+
     # Stuff the files in here.
     files = []
     directory = {}
@@ -138,12 +144,20 @@ def index(request, url=None):
             # ctime, mtime
             item['ctime'] = datetime.fromtimestamp(itemstat.st_ctime)
             item['mtime'] = datetime.fromtimestamp(itemstat.st_mtime)
+
+            # permissions (numeric)
+            octs = "%04d" % int(oct(itemstat.st_mode & 0777))
+            item['perms_numeric'] = octs
+            item['perms'] = "%s%s%s%s" % (dperms, perms[int(octs[1])], 
+                                            perms[int(octs[2])], 
+                                            perms[int(octs[3])])
+
         except:
             # Blank out because of broken link.
             item['user'] = item['group'] = ''
+            item['perms_numeric'] = item['perms'] = ''
             item['size'] = item['ctime'] = item['mtime'] = None
             item['broken_link'] = True
-
 
         mime = mimetypes.guess_type(item['filepath'], False)[0]
   
@@ -155,17 +169,11 @@ def index(request, url=None):
         else:
             item['can_edit'] = False
 
-        # permissions (numeric)
-        octs = "%04d" % int(oct(itemstat.st_mode & 0777))
-        
         dperms = '-'
         if item['directory']:
             item['can_edit'] = False
             dperms = 'd'
 
-        item['perms_numeric'] = octs
-        item['perms'] = "%s%s%s%s" % (dperms, perms[int(octs[1])], 
-                                      perms[int(octs[2])], perms[int(octs[3])])
      
         if os.access(item['filepath'], os.R_OK):
             item['can_read'] = True
@@ -235,6 +243,80 @@ def mkdir(request, url=None):
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
 mkdir = staff_member_required(mkdir)
+
+#@staff_member_required
+def delete_selected(request, url=None):
+    """
+    Delete selected files and directories. (Called from index)
+    """
+   
+    # Files to remove.
+    selected = request.POST.getlist('_selected_action')
+    
+    url = utils.clean_path(url)
+    parent = '/'.join(url.split('/')[:-1])
+    full_path = os.path.join(utils.get_document_root(), url)
+    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
+
+    if request.method == 'POST' and request.POST.get('post') == 'yes':
+        # Files selected to remove.
+       
+        for item in selected:
+            full_path = os.path.join(full_parent, item)
+
+            # If this is a directory, do the walk
+            if os.path.isdir(full_path) and not os.path.islink(full_path):
+                for root, dirs, files in os.walk(full_path, topdown=False):
+                    for name in files:
+                        os.remove(os.path.join(root, name))
+                    for name in dirs:
+                        os.rmdir(os.path.join(root, name))
+
+                os.rmdir(full_path)
+            else:
+                os.remove(full_path)
+
+        return None
+
+    filelist = []
+    errorlist = []
+
+    for item in selected:
+        full_path = os.path.join(full_parent, item)
+
+        # If this is a directory, generate the list of files to be removed.
+        if os.path.isdir(full_path) and not os.path.islink(full_path):
+            filelist.append("/%s" % item)
+            for root, dirs, files, in os.walk(full_path):
+                for name in files: 
+                    f = os.path.join(root, name).replace(full_parent, '', 1)
+                    if not os.access(os.path.join(root), os.W_OK):
+                        errorlist.append(f)
+                    filelist.append(f)
+
+                for name in dirs:
+                    d = os.path.join(root, name).replace(full_parent, '', 1)
+                    if not os.access(os.path.join(root), os.W_OK):
+                        errorlist.append(d)
+                    filelist.append(d)
+        else:
+            if not os.access(full_path, os.W_OK):
+                errorlist.append("/%s" % item)
+
+            filelist.append("/%s" % item)
+
+    # Because python 2.3 is ... painful.
+    filelist.sort()
+    errorlist.sort()
+    
+    return render_to_response("admin/file_manager/delete_selected.html", 
+                              {'files': filelist,
+                               'errorlist': errorlist,
+                               'selected': selected,
+                               'directory': '',},
+                              context_instance=template.RequestContext(request))
+delete_selected = staff_member_required(delete_selected)
+
 
 #@staff_member_required
 def delete(request, url=None):

@@ -5,6 +5,11 @@
 
 {% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
+
+  <script type="text/javascript" src="{% admin_media_prefix %}js/core.js"></script> 
+  <script type="text/javascript" src="{% admin_media_prefix %}js/getElementsBySelector.js"></script>
+  <script type="text/javascript" src="{% admin_media_prefix %}js/actions.js"></script>
+
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -51,27 +56,25 @@
 	<form action="" method="post">
 
 	<div class="actions">
-	<!--
+	{% if directory.url %}<a href="{% url admin_file_manager_list directory.parent %}">Up one Directory</a>{% endif %}
 		<label>Action: 
 		<select name="action"> 
 			<option value="" selected="selected">---------</option>
 			<option value="delete_selected">Delete selected items</option>
 		</select>
 		</label>
-	<button type="submit" class="button" title="Run the selected action" name="index" value="0">Go</button>
-	-->
-	{% if directory.url %}
-		<a href="{% url admin_file_manager_list directory.parent %}">Up one Directory</a>
-	{% else %}
-		&nbsp;
-	{% endif %}
+		<button type="submit" class="button" title="Run the selected action" name="index" value="0">Go</button>
+
 
 	</div>
 
 <table cellspacing="0">
 	<thead>
 	<tr>
-		<th> </th>
+		<th> 
+		<input style="display: inline;" id="action-toggle" type="checkbox">
+
+		</th>
 		<th>Name</th>
 		<th>Size</th>
 		<th>Permissions</th>
@@ -91,13 +94,14 @@
 {% for file in dfile.list|dictsort:"filename" %}
 	<tr class="{% cycle 'row1' 'row2' %}">
 		<td>
+			<input class="action-select" value="{{ file.fileurl }}" name="_selected_action" type="checkbox">
 			&nbsp;
 		</td>
 		<td>
 			{% if file.directory %}
-				<span class="folder">Folder</span>
+				<span class="folder">[Folder]</span>
 			{% else %}
-				<span class="file">File</span>
+				<span class="file">[File]</span>
 			{% endif %}	
 			<a href="{% if file.directory %}{% url admin_file_manager_list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
             {% if file.link %}
