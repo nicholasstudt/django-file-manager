@@ -120,6 +120,7 @@ def index(request, url=None):
 
     for file in listing:
         item = {}
+        dperms = '-'
         
         item['filename'] = file
         item['filepath'] = os.path.join(full_path, file)
@@ -169,7 +170,6 @@ def index(request, url=None):
         else:
             item['can_edit'] = False
 
-        dperms = '-'
         if item['directory']:
             item['can_edit'] = False
             dperms = 'd'

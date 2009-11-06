@@ -4,11 +4,12 @@
 {% block bodyclass %}change-list file_manager{% endblock %}
 
 {% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
 
-  <script type="text/javascript" src="{% admin_media_prefix %}js/core.js"></script> 
-  <script type="text/javascript" src="{% admin_media_prefix %}js/getElementsBySelector.js"></script>
-  <script type="text/javascript" src="{% admin_media_prefix %}js/actions.js"></script>
+	<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
+
+	<script type="text/javascript" src="{% admin_media_prefix %}js/core.js"></script> 
+	<script type="text/javascript" src="{% admin_media_prefix %}js/getElementsBySelector.js"></script>
+	<script type="text/javascript" src="{% admin_media_prefix %}js/actions.js"></script>
 
 {% endblock %}
 
@@ -93,20 +94,24 @@
 
 {% for file in dfile.list|dictsort:"filename" %}
 	<tr class="{% cycle 'row1' 'row2' %}">
-		<td>
-			<input class="action-select" value="{{ file.fileurl }}" name="_selected_action" type="checkbox">
-			&nbsp;
-		</td>
+		<td><input class="action-select" value="{{ file.fileurl }}" name="_selected_action" type="checkbox"></td>
 		<td>
 			{% if file.directory %}
-				<span class="folder">[Folder]</span>
+				<span class="folder"><span class="label">[Folder]</span></span>
 			{% else %}
-				<span class="file">[File]</span>
+				
+				<span class="{% if not file.can_edit %}binary{% endif %}file"><span class="label">[File]</span></span>
 			{% endif %}	
-			<a href="{% if file.directory %}{% url admin_file_manager_list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
+
+			{% if file.broken_link %}
+				{{ file.filename }}
+			{% else %}
+				<a href="{% if file.directory %}{% url admin_file_manager_list file.fileurl %}{% else %}/{{ file.fileurl }}{% endif %}">{{ file.filename }}</a>
+			{% endif %}
+
             {% if file.link %}
 				<span class="{% if file.broken_link %}broken_{% endif %}link">
-                [{% if file.broken_link %}Broken {% endif %}Link]
+					<span class="label">[{% if file.broken_link %}Broken {% endif %}Link]</span>
 					<span class="link_destination">/{{ file.link_src }}</span>
 				</span>
             {% endif %}
@@ -123,7 +128,7 @@
 		<td>{{ file.group }}</td>
 
 		<td>
-			{% if not file.directory and file.can_edit and perms.file_manager.can_create_file %}
+			{% if not file.directory and not file.broken_link and file.can_edit and perms.file_manager.can_create_file %}
 			<a href="{% url admin_file_manager_update file.fileurl %}" class="changelink">Edit</a> 
 			{% endif %}
 		</td>

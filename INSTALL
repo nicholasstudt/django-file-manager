@@ -3,19 +3,71 @@ To install run this command from the command prompt:
 	python setup.py install
 
 * Add the File Manger to your Admin Index Page
+
 	1. Copy the default "admin/index.html" template to your local
 	template store. 
 
 	2. Edit the copied template to include immediately 
 	before {% for app in app_list %}
 
-	   {% include "admin/file_manager/app_list_include.html" %}
+		{% include "admin/file_manager/app_list_include.html" %}
 
 	3. Change {% if app_list  %} to immediately before included line in
 	step 2.
 
 		{% if app_list or perms.file_manager %}
 
-	4. Add the file manager to your projects urls.py
+	4. Add the file to your site's urls.py
+ 
+		(r'^admin/file_manager', include('file_manager.urls')),
 
-	    (r'^admin/file_manager', include('file_manager.urls')),
+	5. Set up the optional CSS detailed below.
+
+* Set up CSS for your site
+
+  If you do not set up the CSS you will simply see the text labels for
+  the icons, some people may prefer this over the icons suggested below.
+
+  1. Find icons you prefer, I am partial to the icons from
+     http://www.famfamfam.com/lab/icons/silk/
+ 
+  2. Set up the CSS in "templates/admin/file_manager/index.html"
+     The example style section below be used directly by setting the
+	 proper url to the icons from famfamfam.com
+
+	 <style type="text/css">
+		span.link_destination { display: none; font-weight: bold; }
+		span.broken_link:hover span.link_destination { display: inline; }
+		span.link:hover span.link_destination { display: inline; }
+	
+		span.folder span.label { display: none; }
+		span.link	span.label { display: none; }
+		span.file	span.label { display: none; }
+		span.binaryfile span.label { display: none; }
+		span.broken_link span.label { display: none; }
+
+		span.folder, span.file, span.binaryfile, span.link, span.broken_link {
+			display:inline;  
+			overflow:hidden;
+			height:18px;
+			padding-left:18px; 
+			padding-bottom:5px;
+			background-repeat:no-repeat;
+		}
+
+		span.folder {
+			background-image: url(/icons/folder.png);
+		}
+		span.file {
+			background-image: url(/icons/page.png);
+		}
+		span.binaryfile {
+			background-image: url(/icons/page_white_camera.png);
+		}
+		span.link {
+			background-image: url(/icons/link.png);
+		}
+		span.broken_link {
+			background-image: url(/icons/link_break.png);
+		}
+	</style>
