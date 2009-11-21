@@ -1,6 +1,10 @@
 Revision history
 
-1.1
+1.1.1 Fri Nov 20 21:47:56 CST 2009:
+ - Backported relpath from python 2.6 to allow file manager to work in
+   older version of python.
+
+1.1 Thu Nov 05 22:37:00 CST 2009:
   - Python 2.3 fixes. [sorted(list) to list.sort()] 
   - Add the ability to add symbolic links. (Unix Only)
   - Adjust templates and index template to handle symbolic links. 

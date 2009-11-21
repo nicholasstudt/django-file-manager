@@ -50,3 +50,33 @@ def clean_path(url):
         result = ''
     
     return result
+
+# Copied from python 2.6 
+def commonprefix(m):
+    "Given a list of pathnames, returns the longest common leading component"
+    if not m: return ''
+    s1 = min(m)
+    s2 = max(m)
+    for i, c in enumerate(s1):
+        if c != s2[i]:
+            return s1[:i]
+    return s1
+
+# Copied from python 2.6 
+def relpath(path, start=curdir):
+    """Return a relative version of a path"""
+
+    if not path:
+        raise ValueError("no path specified")
+
+    start_list = abspath(start).split(sep)
+    path_list = abspath(path).split(sep)
+           
+    # Work out how much of the filepath is shared by start and path.
+    i = len(commonprefix([start_list, path_list]))
+           
+    rel_list = [pardir] * (len(start_list)-i) + path_list[i:]
+    if not rel_list:
+        return curdir
+    return join(*rel_list)
+

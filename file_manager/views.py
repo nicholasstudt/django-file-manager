@@ -207,7 +207,11 @@ def mkln(request, url=None):
         if form.is_valid(): 
             src = os.path.join(full_path, form.cleaned_data['link'])
             dest = os.path.join(full_path, form.cleaned_data['name'])
-            relative = os.path.relpath(src, full_path)
+            
+            try:
+                relative = os.path.relpath(src, full_path)
+            except AttributeError:
+                relative = utils.relpath(src, full_path)
 
             os.symlink(relative, dest)
             
@@ -408,7 +412,10 @@ def move(request, url=None):
                 if not os.path.isabs(src):
                     src = os.path.join(os.path.dirname(full_path), src)
 
-                relative = os.path.relpath(src, form.cleaned_data['parent'])
+                try:
+                    relative = os.path.relpath(src, form.cleaned_data['parent'])
+                except AttributeError:
+                    relative = utils.relpath(src, form.cleaned_data['parent'])
 
                 os.remove(full_path) # Remove original link.
                 os.symlink(relative, new) # Create new link.
