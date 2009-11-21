@@ -63,14 +63,14 @@ def commonprefix(m):
     return s1
 
 # Copied from python 2.6 
-def relpath(path, start=curdir):
+def relpath(path, start=os.path.curdir):
     """Return a relative version of a path"""
 
     if not path:
         raise ValueError("no path specified")
 
-    start_list = abspath(start).split(sep)
-    path_list = abspath(path).split(sep)
+    start_list = os.path.abspath(start).split(sep)
+    path_list = os.path.abspath(path).split(sep)
            
     # Work out how much of the filepath is shared by start and path.
     i = len(commonprefix([start_list, path_list]))
