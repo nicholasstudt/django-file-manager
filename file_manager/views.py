@@ -368,7 +368,12 @@ def delete(request, url=None):
                     errorlist.append(d)
                 filelist.append(d)
     else:
-        if not os.access(full_path, os.W_OK):
+        check_path = full_path
+
+        if os.path.islink(full_path):
+            check_path = full_parent
+        
+        if not os.access(check_path, os.W_OK):
             errorlist.append("/%s" % url)
 
         filelist.append("/%s" % url)
