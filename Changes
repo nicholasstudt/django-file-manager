@@ -1,5 +1,21 @@
 Revision history
 
+Faking admin link.
+FormAdmin(admin.ModelAdmin):
+    def get_urls(self):
+        urls = patterns('django.views.generic.simple',
+                        url(r'^$', 'redirect_to', 
+                            {'url': reverse('builder-index', 'formunculous.urls')},
+                            name="formunculous_applicationdefinition_changelist"),
+                        
+                        url(r'^add/$', 'redirect_to', 
+                            {'url': reverse('builder-add-ad',
+                                            'formunculous.urls')},
+                            name="formunculous_applicationdefinition_add"),)
+		return urls 
+admin.site.register(Form, FormAdmin)
+
+
 1.2
   - Fixed bug #14. Broken symbolic links can now be deleted.
 
