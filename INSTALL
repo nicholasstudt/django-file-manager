@@ -47,7 +47,8 @@ To install run this command from the command prompt:
 		span.broken_link span.label { display: none; }
 
 		span.folder, span.file, span.binaryfile, span.link, span.broken_link {
-			display:inline;  
+			display:block;
+			float:left;   
 			overflow:hidden;
 			height:18px;
 			padding-left:18px; 
@@ -70,4 +71,5 @@ To install run this command from the command prompt:
 		span.broken_link {
 			background-image: url(/icons/link_break.png);
 		}
+
 	</style>
