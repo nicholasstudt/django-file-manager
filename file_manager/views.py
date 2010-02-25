@@ -97,6 +97,7 @@ def index(request, url=None):
     directory = {}
     perms = [ '---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx' ]
 
+    ignore = utils.get_ignore_list()
     url = utils.clean_path(url)
     full_path = os.path.join(utils.get_document_root(), url)
 
@@ -119,6 +120,9 @@ def index(request, url=None):
         directory['can_write'] = False
 
     for file in listing:
+        if file in ignore: 
+            continue
+
         item = {}
         dperms = '-'
         
@@ -173,7 +177,6 @@ def index(request, url=None):
         if item['directory']:
             item['can_edit'] = False
             dperms = 'd'
-
      
         if os.access(item['filepath'], os.R_OK):
             item['can_read'] = True

@@ -18,6 +18,8 @@ admin.site.register(Form, FormAdmin)
 
 1.2
   - Fixed bug #14. Broken symbolic links can now be deleted.
+  - Add ability to use settings.FILE_IGNORE_LIST that is a list of
+	files or directories to ignore. (ie. .svn, .htaccess)
 
 1.1.1 Fri Nov 20 21:47:56 CST 2009:
   - Backported relpath from python 2.6 to allow file manager to work in

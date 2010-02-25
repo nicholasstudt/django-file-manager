@@ -4,6 +4,16 @@ import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
+def get_ignore_list():
+    """
+    List of files to ignore. 
+    """
+    
+    if not settings.FILE_IGNORE_LIST:
+        return ''
+    else:
+        return settings.FILE_IGNORE_LIST
+
 def get_max_upload_size():
     """
     Pull the FILE_UPLOAD_MAX_SIZE from settings.
