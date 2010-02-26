@@ -1,23 +1,14 @@
 Revision history
 
-Faking admin link.
-FormAdmin(admin.ModelAdmin):
-    def get_urls(self):
-        urls = patterns('django.views.generic.simple',
-                        url(r'^$', 'redirect_to', 
-                            {'url': reverse('builder-index', 'formunculous.urls')},
-                            name="formunculous_applicationdefinition_changelist"),
-                        
-                        url(r'^add/$', 'redirect_to', 
-                            {'url': reverse('builder-add-ad',
-                                            'formunculous.urls')},
-                            name="formunculous_applicationdefinition_add"),)
-		return urls 
-admin.site.register(Form, FormAdmin)
-
-
 1.2
   - Fixed bug #14. Broken symbolic links can now be deleted.
+  - Implemented the admin insertion method from Carson Gee (Formunculous) 
+  - Including the relevant Silk icons from
+	http://www.famfamfam.com/lab/icons/silk/ they were released under
+	both the Creative Commons Attribution 2.5 License. Not all of the
+	icons are included with this application, I encourage everyone to
+	have a look at the set it is a very nice set.
+  - Use CSS and icons by default.
   - Add ability to use settings.FILE_IGNORE_LIST that is a list of
 	files or directories to ignore. (ie. .svn, .htaccess)
 

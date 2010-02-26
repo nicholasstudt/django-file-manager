@@ -4,6 +4,33 @@ import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
+def directory_file(document_root, ignore, root, dirs, original=None):
+    """
+    Take the results of an os.walk and apply the ignore and original
+    file filters, works for both files and directories.
+    """
+        
+    choices = []
+
+    for d in dirs:
+        if d in ignore: 
+            continue
+    
+        d = os.path.join(root, d)
+    
+        if not original or not d.startswith(original): 
+            d_short = d.replace(document_root, "", 1) 
+        
+            skip = 0
+            for a in d_short.split('/'):
+                if a in ignore:
+                    skip = 1 
+    
+            if not skip:
+                choices.append((d, d_short))
+
+    return choices
+
 def get_ignore_list():
     """
     List of files to ignore. 

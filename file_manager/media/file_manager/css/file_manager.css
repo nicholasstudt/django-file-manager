@@ -1,0 +1,20 @@
+<style type="text/css">
+	span.link_destination { display: none; font-weight: bold; }
+	span.broken_link:hover span.link_destination { display: inline; }
+	span.link:hover span.link_destination { display: inline; }
+
+	span.folder span.label { display: none; }
+	span.link	span.label { display: none; }
+	span.file	span.label { display: none; }
+	span.binaryfile span.label { display: none; }
+	span.broken_link span.label { display: none; }
+
+	span.folder, span.file, span.binaryfile, span.link, span.broken_link {
+		display:inline;  
+		overflow:hidden;
+		height:18px;
+		padding-left:18px; 
+		padding-bottom:5px;
+		background-repeat:no-repeat;
+	}
+</style>

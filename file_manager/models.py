@@ -1,7 +1,7 @@
 from django.db import models
 #from django.contrib import admin
 
-class Items(models.Model):
+class File(models.Model):
     class Meta:
         permissions = (
             ("can_create_file", "Can create file"),

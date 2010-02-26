@@ -25,6 +25,9 @@ urlpatterns = patterns('',
     url(r'^/upload/(?P<url>.*)$', 'file_manager.views.upload', 
         name='admin_file_manager_upload'),
 
+    url(r'^/upload/$', 'file_manager.views.upload', 
+        name='admin_file_manager_upload2'),
+
     # Link Options
     url(r'^/mkln/(?P<url>.*)$', 'file_manager.views.mkln', 
         name='admin_file_manager_mkln'),

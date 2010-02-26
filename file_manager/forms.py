@@ -20,6 +20,7 @@ class DirectoryFileForm(forms.Form):
     def make_choices(self):
  
         choices = []
+        ignore = utils.get_ignore_list()
 
         # Make "/" valid"
         d = self.document_root
@@ -30,14 +31,11 @@ class DirectoryFileForm(forms.Form):
         choices.append((d, d_short))
 
         for root, dirs, files in os.walk(self.document_root):
-            for d in dirs:
-                d = os.path.join(root, d)
-                d_short = d.replace(self.document_root, "", 1)
-                choices.append((d, d_short))
-            for f in files:
-                f = os.path.join(root, f)
-                f_short = f.replace(self.document_root, "", 1)
-                choices.append((f, f_short))
+            if root in ignore:
+                continue
+
+            choices.extend(utils.directory_file(self.document_root, ignore, root, dirs))
+            choices.extend(utils.directory_file(self.document_root, ignore, root, files))
 
 
         #return sorted(choices)      
@@ -78,6 +76,7 @@ class DirectoryForm(forms.Form):
     def make_choices(self):
  
         choices = []
+        ignore = utils.get_ignore_list()
 
         # Make "/" valid"
         d = self.document_root
@@ -88,11 +87,7 @@ class DirectoryForm(forms.Form):
         choices.append((d, d_short))
 
         for root, dirs, files in os.walk(self.document_root):
-            for d in dirs:
-                d = os.path.join(root, d)
-                if not d.startswith(self.original): 
-                    d_short = d.replace(self.document_root, "", 1)
-                    choices.append((d, d_short))
+            choices.extend(utils.directory_file(self.document_root, ignore, root, dirs, self.original ))
 
         #return sorted(choices)      
         choices.sort()

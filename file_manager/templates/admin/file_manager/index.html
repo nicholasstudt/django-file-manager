@@ -6,6 +6,24 @@
 {% block extrastyle %}{{ block.super }}
 
 	<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
+	<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}file_manager/css/file_manager.css" />
+	<style type="text/css">
+	span.folder {
+		background-image: url({% admin_media_prefix %}file_manager/img/folder.png);
+	}
+	span.file {
+		background-image: url({% admin_media_prefix %}file_manager/img/page.png);
+	}
+	span.binaryfile {
+		background-image: url({% admin_media_prefix %}file_manager/img/page_white_camera.png);
+	}
+	span.link {
+		background-image: url({% admin_media_prefix %}file_manager/img/link.png);
+	}
+	span.broken_link {
+		background-image: url({% admin_media_prefix %}file_manager/img/link_break.png);
+	}
+	</style>
 
 	<script type="text/javascript" src="{% admin_media_prefix %}js/core.js"></script> 
 	<script type="text/javascript" src="{% admin_media_prefix %}js/getElementsBySelector.js"></script>
