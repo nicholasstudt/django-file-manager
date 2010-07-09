@@ -117,3 +117,54 @@ def relpath(path, start=os.path.curdir):
         return curdir
     return os.path.join(*rel_list)
 
+# From: django.contrib.admin.options
+def log_addition(request, object):
+    """
+    Log that an object has been successfully added.
+
+    The default implementation creates an admin LogEntry object.
+    """
+    from django.contrib.admin.models import LogEntry, ADDITION
+    LogEntry.objects.log_action(
+        user_id         = request.user.pk,
+        content_type_id = ContentType.objects.get_for_model(object).pk,
+        object_id       = object.pk,
+        object_repr     = force_unicode(object),
+        action_flag     = ADDITION
+    )
+
+# From: django.contrib.admin.options
+def log_change(request, object, message):
+    """
+    Log that an object has been successfully changed.
+
+    The default implementation creates an admin LogEntry object.
+    """
+    from django.contrib.admin.models import LogEntry, CHANGE
+    LogEntry.objects.log_action(
+        user_id         = request.user.pk,
+        content_type_id = ContentType.objects.get_for_model(object).pk,
+        object_id       = object.pk,
+        object_repr     = force_unicode(object),
+        action_flag     = CHANGE,
+        change_message  = message
+    )
+
+# From: django.contrib.admin.options
+def log_deletion(request, object, object_repr):
+    """
+    Log that an object has been successfully deleted. Note that since the
+    object is deleted, it might no longer be safe to call *any* methods
+    on the object, hence this method getting object_repr.
+
+    The default implementation creates an admin LogEntry object.
+    """
+    from django.contrib.admin.models import LogEntry, DELETION
+    from file_manager import models
+    LogEntry.objects.log_action(
+        user_id         = request.user.id,
+        content_type_id = ContentType.objects.get_for_model(models.File).pk,
+        object_id       = object.pk,
+        object_repr     = object_repr,
+        action_flag     = DELETION
+    )
