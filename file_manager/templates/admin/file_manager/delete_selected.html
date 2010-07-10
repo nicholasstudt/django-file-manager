@@ -43,6 +43,7 @@
 </ul>
 
 <form action="" method="post">
+{% csrf_token %}
 <div>
     <input type="hidden" name="action" value="delete_selected" />
     {% for item in selected %}

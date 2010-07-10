@@ -31,6 +31,7 @@
 <div id="content-main">
 
 <form action="" method="POST">
+{% csrf_token %}
 <div>
 {% if form.errors %}
 	 <p class="errornote">

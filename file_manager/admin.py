@@ -8,6 +8,10 @@ from file_manager.models import File
 reverse_lazy = lazy(reverse, unicode)
 
 class FileAdmin(admin.ModelAdmin):
+    """
+    This is only to get the File Manager to register itself into the
+    admin.
+    """
     def get_urls(self):
         urls = patterns('django.views.generic.simple',
                         url(r'^$', 'redirect_to', 

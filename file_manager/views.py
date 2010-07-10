@@ -80,6 +80,9 @@ def copy(request, url=None):
                               context_instance=template.RequestContext(request))
 copy = staff_member_required(copy)
 
+def history(request, url=None):
+    pass
+
 #@staff_member_required
 def index(request, url=None):
     """
@@ -441,6 +444,9 @@ def move(request, url=None):
                                'directory': os.path.isdir(full_path)},
                               context_instance=template.RequestContext(request))
 move = staff_member_required(move)
+
+def permission(request, url=None):
+    pass
 
 #@staff_member_required
 def rename(request, url=None):

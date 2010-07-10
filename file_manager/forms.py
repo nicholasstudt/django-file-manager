@@ -153,6 +153,9 @@ class CopyForm(NameForm,DirectoryForm):
 class CreateLinkForm(NameForm,DirectoryFileForm):
     pass
 
+class PermissionForm(forms.Form):
+    pass
+
 class UploadForm(forms.Form):
 
     def __init__(self, path, *args, **kwargs):

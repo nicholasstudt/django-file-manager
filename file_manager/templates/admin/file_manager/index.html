@@ -73,6 +73,7 @@
   
 	<div class="module" id="changelist">
 	<form action="" method="post">
+	{% csrf_token %}
 
 	<div class="actions">
 	{% if directory.url %}<a href="{% url admin_file_manager_list directory.parent %}">Up one Directory</a>{% endif %}

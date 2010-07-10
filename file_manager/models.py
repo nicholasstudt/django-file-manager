@@ -1,7 +1,6 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.db import models
 from django.utils.translation import ugettext as _
-#from django.contrib import admin
 
 class File(models.Model):
     TYPES = (
@@ -14,22 +13,16 @@ class File(models.Model):
         ('S_IFIFO', _('FIFO')),
     )
 
-    # Path is relative to settings.DOCUMENT_ROOT
+    # Path is relative to settings.DOCUMENT_ROOT and contains the full
+    # file name.
     path = models.TextField()
-    name = models.CharField(max_length=250)  
     type = models.CharField(max_length=10, choices=TYPES)
+    
+    permissions = models.ManyToManyField(FilePermission, verbose_name=_('file permissions'), blank=True)
    
-    # By default the person that created the file.
-    owner = models.ForeignKey(User) 
-
-    # How should permissions be handled?
-    # What can a non-owner do? What can they not do?
-    # How is that represented?
-
-    #permissions = models.ManyToManyField(Permission, verbose_name=_('file permissions'), blank=True)
-
     class Meta:
         permissions = (
+            # These are assigned to users.
             ('can_create_file', _('Can create file')),
             ('can_update_file', _('Can update file')),
             ('can_copy_file', _('Can copy file')),
@@ -50,5 +43,15 @@ class File(models.Model):
             ('can_create_dir', _('Can make directory')),
             ('can_move_dir', _('Can move directory')),
 
-
+            # These are assigned to paths.
+            ('can_view', _('Can view')),
+            ('can_write', _('Can write')),
+            ('can_delete', _('Can delete')),
+            ('can_rename', _('Can rename')),
+            ('can_move', _('Can move')),
         )
+
+class FilePermission(models.Model):
+    user = models.ForeignKey(User)
+    group = models.ForeignKey(Group)
+    permission = models.ForeignKey(Permission)
