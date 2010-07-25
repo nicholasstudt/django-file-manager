@@ -32,9 +32,7 @@ def directory_file(document_root, ignore, root, dirs, original=None):
     return choices
 
 def get_ignore_list():
-    """
-    List of files to ignore. 
-    """
+    "List of files to ignore."
     
     if not settings.FILE_IGNORE_LIST:
         return ''
@@ -42,9 +40,8 @@ def get_ignore_list():
         return settings.FILE_IGNORE_LIST
 
 def get_max_upload_size():
-    """
-    Pull the FILE_UPLOAD_MAX_SIZE from settings.
-    """
+    "Pull the FILE_UPLOAD_MAX_SIZE from settings."
+
     if not settings.FILE_UPLOAD_MAX_SIZE:
         raise ImproperlyConfigured, 'file_manager requires FILE_UPLOAD_MAX_SIZE variable be defined in settings.py' 
 
@@ -91,6 +88,7 @@ def clean_path(url):
 # Copied from python 2.6 
 def commonprefix(m):
     "Given a list of pathnames, returns the longest common leading component"
+
     if not m: return ''
     s1 = min(m)
     s2 = max(m)
@@ -101,7 +99,7 @@ def commonprefix(m):
 
 # Copied from python 2.6 
 def relpath(path, start=os.path.curdir):
-    """Return a relative version of a path"""
+    "Return a relative version of a path"
 
     if not path:
         raise ValueError("no path specified")

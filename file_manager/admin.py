@@ -1,7 +1,7 @@
-from django.contrib import admin
 from django.conf.urls.defaults import *
-from django.utils.functional import lazy
+from django.contrib import admin
 from django.core.urlresolvers import reverse
+from django.utils.functional import lazy
 
 from file_manager.models import File 
 

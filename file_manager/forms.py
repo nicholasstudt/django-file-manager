@@ -37,7 +37,6 @@ class DirectoryFileForm(forms.Form):
             choices.extend(utils.directory_file(self.document_root, ignore, root, dirs))
             choices.extend(utils.directory_file(self.document_root, ignore, root, files))
 
-
         #return sorted(choices)      
         choices.sort()
         return choices
@@ -57,8 +56,6 @@ class DirectoryFileForm(forms.Form):
             raise forms.ValidationError(_('Can not write to directory.'))
 
         return parent
-
-
 
 class DirectoryForm(forms.Form):
 

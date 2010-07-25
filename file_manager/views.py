@@ -15,7 +15,7 @@ from django.utils.translation import ugettext as _
 from file_manager import forms
 from file_manager import utils
 
-#@staff_member_required
+@staff_member_required
 def create(request, url=None):
     """
     Create a new text file at the url.
@@ -42,9 +42,8 @@ def create(request, url=None):
     return render_to_response("admin/file_manager/create.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
-create = staff_member_required(create)
 
-#@staff_member_required
+@staff_member_required
 def copy(request, url=None):
     """
         Copy file/directory to a new location.
@@ -78,12 +77,12 @@ def copy(request, url=None):
                                'current': "/%s" % parent,
                                'directory': os.path.isdir(full_path)},
                               context_instance=template.RequestContext(request))
-copy = staff_member_required(copy)
 
+@staff_member_required
 def history(request, url=None):
     pass
 
-#@staff_member_required
+@staff_member_required
 def index(request, url=None):
     """
         Show list of files in a url inside of the document root.
@@ -196,9 +195,8 @@ def index(request, url=None):
     return render_to_response("admin/file_manager/index.html", 
                               {'directory': directory, 'files': files,},
                               context_instance=template.RequestContext(request))
-index = staff_member_required(index)
 
-#@staff_member_required
+@staff_member_required
 def mkln(request, url=None):
     """ 
         Make a new link at the current url.
@@ -228,9 +226,8 @@ def mkln(request, url=None):
     return render_to_response("admin/file_manager/mkln.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
-mkln = staff_member_required(mkln)
 
-#@staff_member_required
+@staff_member_required
 def mkdir(request, url=None):
     """ 
         Make a new directory at the current url.
@@ -252,9 +249,8 @@ def mkdir(request, url=None):
     return render_to_response("admin/file_manager/mkdir.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
-mkdir = staff_member_required(mkdir)
 
-#@staff_member_required
+@staff_member_required
 def delete_selected(request, url=None):
     """
     Delete selected files and directories. (Called from index)
@@ -325,10 +321,8 @@ def delete_selected(request, url=None):
                                'selected': selected,
                                'directory': '',},
                               context_instance=template.RequestContext(request))
-delete_selected = staff_member_required(delete_selected)
 
-
-#@staff_member_required
+@staff_member_required
 def delete(request, url=None):
     """
     Delete a file/directory
@@ -395,9 +389,8 @@ def delete(request, url=None):
                                'errorlist': errorlist,
                                'directory': '',},
                               context_instance=template.RequestContext(request))
-delete = staff_member_required(delete)
 
-#@staff_member_required
+@staff_member_required
 def move(request, url=None):
     """
         Move file/directory to a new location.
@@ -443,12 +436,12 @@ def move(request, url=None):
                                'current': "/%s" % parent,
                                'directory': os.path.isdir(full_path)},
                               context_instance=template.RequestContext(request))
-move = staff_member_required(move)
 
+@staff_member_required
 def permission(request, url=None):
     pass
 
-#@staff_member_required
+@staff_member_required
 def rename(request, url=None):
     """
         Rename
@@ -479,9 +472,8 @@ def rename(request, url=None):
                               {'form': form, 'url': url, 
                                'directory': os.path.isdir(full_path)},
                               context_instance=template.RequestContext(request))
-rename = staff_member_required(rename)
 
-#@staff_member_required
+@staff_member_required
 def update(request, url=None):
     """
         Update
@@ -532,9 +524,8 @@ def update(request, url=None):
     return render_to_response("admin/file_manager/update.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
-update = staff_member_required(update)
 
-#@staff_member_required
+@staff_member_required
 def upload(request, url=None):
     """
         Upload a new file.
@@ -558,4 +549,3 @@ def upload(request, url=None):
     return render_to_response("admin/file_manager/upload.html", 
                               {'form': form, 'url': url,},
                               context_instance=template.RequestContext(request))
-upload = staff_member_required(upload)

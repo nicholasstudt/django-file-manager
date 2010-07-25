@@ -13,10 +13,12 @@ class File(models.Model):
         ('S_IFIFO', _('FIFO')),
     )
 
-    # Path is relative to settings.DOCUMENT_ROOT and contains the full
-    # file name.
+    # Path is relative to settings.DOCUMENT_ROOT
     path = models.TextField()
     type = models.CharField(max_length=10, choices=TYPES)
+
+    # Prevents inheritance of permissions.
+    block_inheritance = models.BooleanField(default=False, help_text=_('Prevent parent permissions from applying to this object.'))
     
     permissions = models.ManyToManyField(FilePermission, verbose_name=_('file permissions'), blank=True)
    
@@ -44,7 +46,6 @@ class File(models.Model):
             ('can_move_dir', _('Can move directory')),
 
             # These are assigned to paths.
-            ('can_view', _('Can view')),
             ('can_write', _('Can write')),
             ('can_delete', _('Can delete')),
             ('can_rename', _('Can rename')),
