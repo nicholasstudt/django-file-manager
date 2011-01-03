@@ -107,13 +107,13 @@ class DirectoryForm(forms.Form):
         return parent
 
 class NameForm(forms.Form):
+    
+    name = forms.CharField()
 
     def __init__(self, path, original, *args, **kwargs):
         self.path = path
         self.original = original
         super(NameForm, self).__init__(*args, **kwargs)
-
-    name = forms.CharField()
 
     def clean_name(self):
         name = self.cleaned_data['name']
@@ -154,12 +154,12 @@ class PermissionForm(forms.Form):
     pass
 
 class UploadForm(forms.Form):
+    
+    file = forms.FileField()
 
     def __init__(self, path, *args, **kwargs):
         self.path = path
         super(UploadForm, self).__init__(*args, **kwargs)
-
-    file = forms.FileField()
 
     def clean_file(self):
         filename = self.cleaned_data['file'].name 

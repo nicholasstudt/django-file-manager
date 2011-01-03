@@ -9,17 +9,25 @@ from pwd import getpwuid
 
 from django import http, template
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
 
 from file_manager import forms
+from file_manager import models
 from file_manager import utils
 
 @staff_member_required
+def admin_redirect(request, id=None):
+    "Redirect from the file id to a path."
+
+    obj = get_object_or_404(models.File, pk=id)
+
+    return redirect('admin_file_manager_detail', url=obj.path.lstrip('/'))
+
+@staff_member_required
 def create(request, url=None):
-    """
-    Create a new text file at the url.
-    """
+    "Create a new text file at the url."
+
     # Create a new text file.
     url = utils.clean_path(url)
     parent = '/'.join(url.split('/')[:-1])
@@ -34,6 +42,12 @@ def create(request, url=None):
             file.write(form.cleaned_data['content'].replace('\r\n', '\n'))
             file.close()
 
+            obj_path = '/' + os.path.join(url, form.cleaned_data['name'])
+
+            obj, created = models.File.objects.get_or_create(path=obj_path, type=models.File.S_IFREG)
+
+            utils.log_addition(request, obj)
+
             return redirect('admin_file_manager_list', url=url)
     else:
         # Read the data from file
@@ -45,9 +59,7 @@ def create(request, url=None):
 
 @staff_member_required
 def copy(request, url=None):
-    """
-        Copy file/directory to a new location.
-    """
+    "Copy file/directory to a new location."
 
     # Not really happy about the l/rstrips.
     url = utils.clean_path(url)
@@ -65,8 +77,19 @@ def copy(request, url=None):
             
             if os.path.isdir(full_path):
                 shutil.copytree(full_path, new_path)
+
+                obj_path = os.path.join(url, form.cleaned_data['name'])
+                file_type = models.File.S_IFDIR
             else:
-                shutil.copy(full_path, new_path)
+                shutil.copy(full_path, new_path) 
+                
+                # Log the copy.
+                obj_path = os.path.join(url, form.cleaned_data['name'])
+                file_type = models.File.S_IFREG 
+                
+            obj, created = models.File.objects.get_or_create(path=obj_path, type=file_type) 
+
+            utils.log_addition(request, obj)
 
             return redirect('admin_file_manager_list', url=parent)
     else:
@@ -79,14 +102,30 @@ def copy(request, url=None):
                               context_instance=template.RequestContext(request))
 
 @staff_member_required
-def history(request, url=None):
-    pass
+def detail(request, url=None):
+
+    url = utils.clean_path(url)
+    parent = '/'.join(url.split('/')[:-1])
+    full_path = os.path.join(utils.get_document_root(), url)
+
+    # Get the details from the file system.
+
+    # Pull the database handle for this item and its history 
+    try:
+        file = models.File.objects.get(path=url)
+    except models.File.DoesNotExist:
+        pass
+
+    return render_to_response("admin/file_manager/detail.html", 
+                              {'url': url,
+                               'current': "/%s" % parent,
+                               'directory': os.path.isdir(full_path)},
+
+                              context_instance=template.RequestContext(request))
 
 @staff_member_required
 def index(request, url=None):
-    """
-        Show list of files in a url inside of the document root.
-    """
+    "Show list of files in a url inside of the document root."
 
     if request.method == 'POST': 
         if request.POST.get('action') == 'delete_selected':
@@ -198,9 +237,7 @@ def index(request, url=None):
 
 @staff_member_required
 def mkln(request, url=None):
-    """ 
-        Make a new link at the current url.
-    """
+    "Make a new link at the current url."
 
     url = utils.clean_path(url)
     full_path = os.path.join(utils.get_document_root(), url)
@@ -218,7 +255,13 @@ def mkln(request, url=None):
                 relative = utils.relpath(src, full_path)
 
             os.symlink(relative, dest)
+
+            obj_path = os.path.join(url, form.cleaned_data['link'])
             
+            obj, created = models.File.objects.get_or_create(path=obj_path, type=models.File.S_IFLNK) 
+            
+            utils.log_addition(request, obj)
+
             return redirect('admin_file_manager_list', url=url)
     else:
         form = forms.CreateLinkForm(full_path, None, full_path)
@@ -229,9 +272,7 @@ def mkln(request, url=None):
 
 @staff_member_required
 def mkdir(request, url=None):
-    """ 
-        Make a new directory at the current url.
-    """
+    "Make a new directory at the current url."
 
     url = utils.clean_path(url)
     full_path = os.path.join(utils.get_document_root(), url)
@@ -241,6 +282,12 @@ def mkdir(request, url=None):
 
         if form.is_valid(): #Make the directory
             os.mkdir(os.path.join(full_path, form.cleaned_data['name']))
+
+            obj_path = os.path.join(url, form.cleaned_data['name'])
+            
+            obj, created = models.File.objects.get_or_create(path=obj_path, type=models.File.S_IFDIR) 
+            
+            utils.log_addition(request, obj)
 
             return redirect('admin_file_manager_list', url=url)
     else:
@@ -252,17 +299,16 @@ def mkdir(request, url=None):
 
 @staff_member_required
 def delete_selected(request, url=None):
-    """
-    Delete selected files and directories. (Called from index)
-    """
+    "Delete selected files and directories. (Called from index)"
    
     # Files to remove.
     selected = request.POST.getlist('_selected_action')
     
     url = utils.clean_path(url)
     parent = '/'.join(url.split('/')[:-1])
-    full_path = os.path.join(utils.get_document_root(), url)
-    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
+    document_root = utils.get_document_root()
+    full_path = os.path.join(document_root, url)
+    full_parent = os.path.join(document_root, parent).rstrip('/')
 
     if request.method == 'POST' and request.POST.get('post') == 'yes':
         # Files selected to remove.
@@ -275,12 +321,48 @@ def delete_selected(request, url=None):
                 for root, dirs, files in os.walk(full_path, topdown=False):
                     for name in files:
                         os.remove(os.path.join(root, name))
+
+                        try: 
+                            obj_path = os.path.join(root, name)
+                            obj_path = obj_path.replace(document_root, '', 1)
+                            obj = models.File.objects.get(path=obj_path) 
+                            utils.log_deletion(request, obj, obj.path)
+                            obj.delete()
+                        except models.File.DoesNotExist:
+                            pass
+
                     for name in dirs:
                         os.rmdir(os.path.join(root, name))
 
+                        try: 
+                            obj_path = os.path.join(root, name)
+                            obj_path = obj_path.replace(document_root, '', 1)
+                            obj = models.File.objects.get(path=obj_path) 
+                            utils.log_deletion(request, obj, obj.path)
+                            obj.delete()
+                        except models.File.DoesNotExist:
+                            pass
+
                 os.rmdir(full_path)
+
+                try: 
+                    obj_path = os.path.join(url, item)
+                    obj = models.File.objects.get(path=obj_path) 
+                    utils.log_deletion(request, obj, obj.path)
+                    obj.delete()
+                except models.File.DoesNotExist:
+                    pass
+
             else:
                 os.remove(full_path)
+
+                try: 
+                    obj_path = os.path.join(url, item)
+                    obj = models.File.objects.get(path=obj_path) 
+                    utils.log_deletion(request, obj, obj.path)
+                    obj.delete()
+                except models.File.DoesNotExist:
+                    pass
 
         return None
 
@@ -324,14 +406,13 @@ def delete_selected(request, url=None):
 
 @staff_member_required
 def delete(request, url=None):
-    """
-    Delete a file/directory
-    """
+    "Delete a file/directory"
     
     url = utils.clean_path(url)
     parent = '/'.join(url.split('/')[:-1])
-    full_path = os.path.join(utils.get_document_root(), url)
-    full_parent = os.path.join(utils.get_document_root(), parent).rstrip('/')
+    document_root = utils.get_document_root()
+    full_path = os.path.join(document_root, url)
+    full_parent = os.path.join(document_root, parent).rstrip('/')
 
     if request.method == 'POST': 
         
@@ -340,12 +421,49 @@ def delete(request, url=None):
             for root, dirs, files in os.walk(full_path, topdown=False):
                 for name in files:
                     os.remove(os.path.join(root, name))
+                    
+                    try: 
+                        obj_path = os.path.join(root, name)
+                        obj_path = obj_path.replace(document_root, '', 1)
+                        obj = models.File.objects.get(path=obj_path) 
+                        utils.log_deletion(request, obj, obj.path)
+                        obj.delete()
+                    except models.File.DoesNotExist:
+                        pass
+
                 for name in dirs:
                     os.rmdir(os.path.join(root, name))
+                    
+                    try: 
+                        obj_path = os.path.join(root, name)
+                        obj_path = obj_path.replace(document_root, '', 1)
+                        obj = models.File.objects.get(path=obj_path) 
+                        utils.log_deletion(request, obj, obj.path) 
+                        obj.delete()
+                    except models.File.DoesNotExist:
+                        pass
 
             os.rmdir(full_path)
+
+            try: 
+                obj_path = full_path.replace(document_root, '', 1)
+                obj = models.File.objects.get(path=obj_path) 
+                utils.log_deletion(request, obj, obj.path)
+                obj.delete()
+            except models.File.DoesNotExist:
+                pass
+
         else:
             os.remove(full_path)
+            
+            try: 
+                obj_path = full_path.replace(document_root, '', 1)
+                print obj_path
+                obj = models.File.objects.get(path=obj_path) 
+                utils.log_deletion(request, obj, obj.path)
+                obj.delete()
+            except models.File.DoesNotExist:
+                pass
 
         return redirect('admin_file_manager_list', url=parent)
 
@@ -423,9 +541,13 @@ def move(request, url=None):
 
                 os.remove(full_path) # Remove original link.
                 os.symlink(relative, new) # Create new link.
+        
+                # FIXME: Log delete.
 
             else:
                 os.rename(full_path, new) #Rename the directory
+                
+                # FIXME: Log delete.
 
             return redirect('admin_file_manager_list', url=parent)
     else:
@@ -439,13 +561,22 @@ def move(request, url=None):
 
 @staff_member_required
 def permission(request, url=None):
-    pass
+
+    url = utils.clean_path(url)
+    parent = '/'.join(url.split('/')[:-1])
+    full_path = os.path.join(utils.get_document_root(), url)
+    
+    form = None
+
+    return render_to_response("admin/file_manager/history.html", 
+                              {'form': form, 'url': url,
+                               'current': "/%s" % parent,
+                               'directory': os.path.isdir(full_path)},
+                              context_instance=template.RequestContext(request))
 
 @staff_member_required
 def rename(request, url=None):
-    """
-        Rename
-    """
+    "Rename an item."
 
     # Not really happy about the l/rstrips.
     url = utils.clean_path(url)
@@ -461,6 +592,8 @@ def rename(request, url=None):
 
             # Rename 
             os.rename(full_path, new)
+                
+            # FIXME: Log delete.
 
             return redirect('admin_file_manager_list', url=parent)
     else:
@@ -496,12 +629,14 @@ def update(request, url=None):
  
             file = codecs.open(full_path, encoding='utf-8', mode='w+')
 
-            if '\r\n' in original.newlines:
+            if original.newlines and '\r\n' in original.newlines:
                 file.write(form.cleaned_data['content'])
             else:
                 file.write(form.cleaned_data['content'].replace('\r\n', '\n'))
 
             file.close() 
+            
+            # FIXME: Log delete.
             
             if request.POST.has_key("_continue"):
                 msg = _('The %(name)s "%(obj)s" was updated successfully. %(rest)s') % {'name': 'file', 'obj': url, 'rest': _("You may edit it again below.") }
@@ -511,7 +646,25 @@ def update(request, url=None):
                               context_instance=template.RequestContext(request))
             
             return redirect('admin_file_manager_list', url=parent)
-    else:
+    else: 
+
+        # Validate that the file can be edited
+        can_edit = False
+        mime = mimetypes.guess_type(full_path, False)[0]
+  
+        # Check mime, directory, and writable
+        if not mime:
+            can_edit = True
+        elif 'text' in mime:
+            can_edit = True 
+
+        if can_edit:
+            if not os.access(full_path, os.W_OK):
+                can_edit = False
+
+        if not can_edit:
+            raise http.Http404
+
         # Read the data from file
         try:
             content = open(full_path).read()
@@ -541,6 +694,12 @@ def upload(request, url=None):
             destination = open(file_path, 'wb+')
             for chunk in form.cleaned_data['file'].chunks():
                 destination.write(chunk) 
+
+            obj_path = '/'+os.path.join(url, form.cleaned_data['file'].name)
+            
+            obj, created = models.File.objects.get_or_create(path=obj_path, type=models.File.S_IFREG) 
+            
+            utils.log_addition(request, obj)
 
             return redirect('admin_file_manager_list', url=url)
     else:

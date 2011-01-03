@@ -1,4 +1,3 @@
-<style type="text/css">
 	span.link_destination { display: none; font-weight: bold; }
 	span.broken_link:hover span.link_destination { display: inline; }
 	span.link:hover span.link_destination { display: inline; }
@@ -17,4 +16,8 @@
 		padding-bottom:5px;
 		background-repeat:no-repeat;
 	}
-</style>
+
+	.detaillink {
+		padding-left: 12px;
+		background: url(../../img/admin/icon_addlink.gif) 0 .2em no-repeat;
+	}

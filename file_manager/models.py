@@ -1,17 +1,37 @@
+import os
+
 from django.contrib.auth.models import User, Group, Permission
 from django.db import models
 from django.utils.translation import ugettext as _
 
+class Permission(models.Model):
+    user = models.ForeignKey(User)
+    group = models.ForeignKey(Group)
+    permission = models.ForeignKey(Permission)
+
 class File(models.Model):
+    S_IFREG = 'S_IFREG'
+    S_IFLNK = 'S_IFLNK'
+    S_IFDIR = 'S_IFDIR'
+    S_IFSOCK = 'S_IFSOCK'
+    S_IFBLK = 'S_IFBLK'
+    S_IFCHR = 'S_IFCHR'
+    S_IFIFO = 'S_IFFIFO'
+
     TYPES = (
-        ('S_IFSOCK', _('Socket')),
-        ('S_IFLNK', _('Symbolic link')),
-        ('S_IFREG', _('Regular file')),
-        ('S_IFBLK', _('Block device')),
-        ('S_IFDIR', _('Directory')),
-        ('S_IFCHR', _('Character device')),
-        ('S_IFIFO', _('FIFO')),
+        (S_IFSOCK, _('Socket')),
+        (S_IFLNK, _('Symbolic link')),
+        (S_IFREG, _('Regular file')),
+        (S_IFBLK, _('Block device')),
+        (S_IFDIR, _('Directory')),
+        (S_IFCHR, _('Character device')),
+        (S_IFIFO, _('FIFO')),
     )
+
+    #import stat 
+    #s = os.stat(file)[ST_MODE]
+    #methodToCall = getattr(stat, 'S_IFSOCK')
+    #result = methodToCall(s)
 
     # Path is relative to settings.DOCUMENT_ROOT
     path = models.TextField()
@@ -20,7 +40,7 @@ class File(models.Model):
     # Prevents inheritance of permissions.
     block_inheritance = models.BooleanField(default=False, help_text=_('Prevent parent permissions from applying to this object.'))
     
-    permissions = models.ManyToManyField(FilePermission, verbose_name=_('file permissions'), blank=True)
+    permissions = models.ManyToManyField(Permission, verbose_name=_('file permissions'), blank=True)
    
     class Meta:
         permissions = (
@@ -51,8 +71,7 @@ class File(models.Model):
             ('can_rename', _('Can rename')),
             ('can_move', _('Can move')),
         )
+    
+    def __unicode__(self):
+        return os.path.basename(self.path)
 
-class FilePermission(models.Model):
-    user = models.ForeignKey(User)
-    group = models.ForeignKey(Group)
-    permission = models.ForeignKey(Permission)

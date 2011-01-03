@@ -49,6 +49,8 @@
 
     {% block object-tools %}
 		<ul class="object-tools">
+			<li><a href="{% url admin_file_manager_detail directory.url %}" class="historylink">{% trans 'History' %}</a></li>
+
 			{% if directory.can_write %}
 
 			{% if perms.file_manager.can_create_dir %}
@@ -145,6 +147,10 @@
 		<td>{{ file.mtime|date:"m/d/Y" }}</td>
 		<td>{{ file.user }}</td>
 		<td>{{ file.group }}</td>
+
+		<td>
+			<a href="{% url admin_file_manager_detail file.fileurl %}" class="detaillink">Detail</a> 
+		</td>
 
 		<td>
 			{% if not file.directory and not file.broken_link and file.can_edit and perms.file_manager.can_create_file %}

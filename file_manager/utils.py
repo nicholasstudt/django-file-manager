@@ -3,6 +3,8 @@ import os
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib.contenttypes.models import ContentType
+from django.utils.encoding import force_unicode
 
 def directory_file(document_root, ignore, root, dirs, original=None):
     """

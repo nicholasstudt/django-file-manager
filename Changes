@@ -12,6 +12,7 @@ Revision history
   - Add ability to use settings.FILE_IGNORE_LIST that is a list of
 	files or directories to ignore. (ie. .svn, .htaccess)
   - Add {% csrf_token %} to forms.
+  - History.
 
 1.1.1 Fri Nov 20 21:47:56 CST 2009:
   - Backported relpath from python 2.6 to allow file manager to work in
