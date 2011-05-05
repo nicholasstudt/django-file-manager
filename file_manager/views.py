@@ -210,6 +210,8 @@ def index(request, url=None):
         # Assume we can't edit anything except text and unknown.
         if not mime:
             item['can_edit'] = True
+        elif 'javascript' in mime:
+            item['can_edit'] = True
         elif 'text' in mime:
             item['can_edit'] = True
         else:
