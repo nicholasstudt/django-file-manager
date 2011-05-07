@@ -657,6 +657,8 @@ def update(request, url=None):
         # Check mime, directory, and writable
         if not mime:
             can_edit = True
+        elif 'javascript' in mime:
+            can_edit = True
         elif 'text' in mime:
             can_edit = True 
 
