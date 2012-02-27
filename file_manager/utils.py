@@ -22,12 +22,24 @@ def directory_file(document_root, ignore, root, dirs, original=None):
     
         if not original or not d.startswith(original): 
             d_short = d.replace(document_root, "", 1) 
-        
+
             skip = 0
-            for a in d_short.split('/'):
-                if a in ignore:
-                    skip = 1 
-    
+
+            if d_short in ignore: 
+                skip = 1
+            else:
+                d_built = None
+                for a in d_short.split('/'):
+                    if d_built:
+                        d_built = "%s/%s" % (d_built, a)
+                    elif not a:
+                        d_built = None
+                    else: 
+                        d_built = "/%s" % a
+
+                    if d_built and d_built in ignore:
+                        skip = 1 
+   
             if not skip:
                 choices.append((d, d_short))
 

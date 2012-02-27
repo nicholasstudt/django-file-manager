@@ -13,6 +13,9 @@ Revision history
 	files or directories to ignore. (ie. .svn, .htaccess)
   - Add {% csrf_token %} to forms.
   - History.
+  - Fixed broken ignore that caused all dropdowns to be empty.
+	FILE_IGNORE_LIST files are not shown in the ui, full directory paths
+	are not shown in the dropdowns.
 
 1.1.1 Fri Nov 20 21:47:56 CST 2009:
   - Backported relpath from python 2.6 to allow file manager to work in
