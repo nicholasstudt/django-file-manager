@@ -1,6 +1,6 @@
 Revision history
 
-1.2
+1.2 Sun May  6 15:47:36 CDT 2012:
   - Fixed bug #14. Broken symbolic links can now be deleted.
   - Implemented the admin insertion method from Carson Gee (Formunculous) 
   - Including the relevant Silk icons from
@@ -12,10 +12,10 @@ Revision history
   - Add ability to use settings.FILE_IGNORE_LIST that is a list of
 	files or directories to ignore. (ie. .svn, .htaccess)
   - Add {% csrf_token %} to forms.
-  - History.
   - Fixed broken ignore that caused all dropdowns to be empty.
 	FILE_IGNORE_LIST files are not shown in the ui, full directory paths
 	are not shown in the dropdowns.
+  - Updated to Django 1.4
 
 1.1.1 Fri Nov 20 21:47:56 CST 2009:
   - Backported relpath from python 2.6 to allow file manager to work in

@@ -12,15 +12,28 @@ class FileAdmin(admin.ModelAdmin):
     This is only to get the File Manager to register itself into the
     admin.
     """
-    def get_urls(self):
+    def get_urls(self): 
+        from django.conf.urls import patterns, url 
+
+        urls = super(FileAdmin, self).get_urls()
+
         urls = patterns('django.views.generic.simple',
-                        url(r'^$', 'redirect_to', 
-                            {'url': reverse_lazy('admin_file_manager_index')},
-                            name="file_manager_applicationdefinition_changelist"),
-                        
+                        url(r'^$', 
+                            'redirect_to',
+                            {'url': reverse_lazy('admin_file_manager_index')}, 
+                            name='file_manager_file_changelist'),
+
                         url(r'^add/$', 'redirect_to', 
                             {'url': reverse_lazy('admin_file_manager_upload2')},
-                            name="file_manager_applicationdefinition_add"),
+                            name="file_manager_file_add"),
+
+                        url(r'^$', 
+                            'redirect_to',
+                            {'url': reverse_lazy('admin_file_manager_index')}, 
+                            name='file_manager_file_change'),
                         )
+
+        print urls
+
         return urls
 admin.site.register(File, FileAdmin)

@@ -17,14 +17,6 @@ from file_manager import models
 from file_manager import utils
 
 @staff_member_required
-def admin_redirect(request, id=None):
-    "Redirect from the file id to a path."
-
-    obj = get_object_or_404(models.File, pk=id)
-
-    return redirect('admin_file_manager_detail', url=obj.path.lstrip('/'))
-
-@staff_member_required
 def create(request, url=None):
     "Create a new text file at the url."
 

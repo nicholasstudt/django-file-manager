@@ -1,4 +1,9 @@
 from django.conf.urls.defaults import *
+from django.core.urlresolvers import reverse
+from django.utils.functional import lazy
+
+
+reverse_lazy = lazy(reverse, unicode)
 
 urlpatterns = patterns('',
 
@@ -46,8 +51,16 @@ urlpatterns = patterns('',
         name='admin_file_manager_mkln'),
 
     # Admin link
-    url(r'^/file/(?P<id>.*)/$', 'file_manager.views.admin_redirect', 
-        name='admin_file_manager_admin_redirect'),
+#     url(r'^file/$', 'redirect_to', 
+#        {'url': reverse_lazy('admin_file_manager_index')},
+#                name="file_manager_applicationdefinition_changelist"),
+                        
+
+    #url(r'^/file/(?P<id>.*)/$', 'file_manager.views.admin_redirect', 
+        #name='admin_file_manager_admin_redirect'),
+
+    #url(r'^/file/(?P<id>.*)/$', 'file_manager.views.admin_redirect', 
+        #name='admin_file_manager_admin_redirect2'),
 
     # File Listing
     url(r'^/$', 'file_manager.views.index', 

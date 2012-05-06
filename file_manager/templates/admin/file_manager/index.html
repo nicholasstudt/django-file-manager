@@ -1,34 +1,43 @@
 {% extends "admin/file_manager/base.html" %}
-{% load i18n adminmedia %}
+{% load i18n staticfiles %}
 
 {% block bodyclass %}change-list file_manager{% endblock %}
 
 {% block extrastyle %}{{ block.super }}
 
-	<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
-	<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}file_manager/css/file_manager.css" />
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "file_manager/css/file_manager.css" %}" />
 	<style type="text/css">
 	span.folder {
-		background-image: url({% admin_media_prefix %}file_manager/img/folder.png);
+		background-image: url({% static "file_manager/img/folder.png" %});
 	}
 	span.file {
-		background-image: url({% admin_media_prefix %}file_manager/img/page.png);
+		background-image: url({% static "file_manager/img/page.png" %});
 	}
 	span.binaryfile {
-		background-image: url({% admin_media_prefix %}file_manager/img/page_white_camera.png);
+		background-image: url({% static "file_manager/img/page_white_camera.png" %});
 	}
 	span.link {
-		background-image: url({% admin_media_prefix %}file_manager/img/link.png);
+		background-image: url({% static "file_manager/img/link.png" %});
 	}
 	span.broken_link {
-		background-image: url({% admin_media_prefix %}file_manager/img/link_break.png);
+		background-image: url({% static "file_manager/img/link_break.png" %});
 	}
 	</style>
 
-	<script type="text/javascript" src="{% admin_media_prefix %}js/core.js"></script> 
-	<script type="text/javascript" src="{% admin_media_prefix %}js/getElementsBySelector.js"></script>
-	<script type="text/javascript" src="{% admin_media_prefix %}js/actions.js"></script>
+	<script type="text/javascript" src="{% static "admin/js/core.js" %}"></script> 
+	<script type="text/javascript" src="{% static "admin/js/admin/RelatedObjectLookups.js" %}"></script>
+	<script type="text/javascript" src="{% static "admin/js/jquery.js" %}"></script>
+	<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+	<script type="text/javascript" src="{% static "admin/js/actions.js" %}"></script>
 
+	<script type="text/javascript">
+	(function($) {
+		$(document).ready(function($) {
+			$("tr input.action-select").actions();
+		});
+	})(django.jQuery);
+	</script> 
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -93,7 +102,7 @@
 <table cellspacing="0">
 	<thead>
 	<tr>
-		<th> 
+		<th class="action-checkbox-column" > 
 		<input style="display: inline;" id="action-toggle" type="checkbox">
 
 		</th>
@@ -148,8 +157,10 @@
 		<td>{{ file.user }}</td>
 		<td>{{ file.group }}</td>
 
-		<td>
+		<td> 
+			<!--
 			<a href="{% url admin_file_manager_detail file.fileurl %}" class="detaillink">Detail</a> 
+			-->
 		</td>
 
 		<td>
