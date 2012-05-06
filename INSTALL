@@ -2,10 +2,3 @@ To install run this command from the command prompt:
 
 	python setup.py install
 
-url handler
-
-media link
-$PYTHON_PATH/file_manager/media/file_manager -> into MEDIA_ROOT
-
-Installed apps
-

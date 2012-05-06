@@ -17,16 +17,7 @@ Installation
 
  These steps detail how to get the File Manager to appear on your Admin Index Page.
 
- 1. Copy the default "admin/index.html" template to your local template
-	store.
+ 1. Add file_manager to your INSTALLED_APPS
 
- 2. Edit the copied template to include immediately before {% for app in app_list %}
-	{% include "admin/file_manager/app_list_include.html" %}
+ 2. Run: python manage.py collectstatic
 
- 3. Change {% if app_list %} to immediately before included line in step 2.
-	{% if app_list or perms.file_manager %}
-
- 4. Add the file manager to your projects urls.py
-	(r'^admin/file_manager', include('file_manager.urls')),
-
- 5. Set up the optional CSS as detailed in the INSTALL file.
